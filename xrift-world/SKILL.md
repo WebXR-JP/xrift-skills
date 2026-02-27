@@ -7,6 +7,12 @@ description: XRiftプラットフォーム用WebXRワールド制作ガイド。
 
 XRiftプラットフォーム用WebXRワールドを作成・修正する際のガイドです。
 
+## 詳細リファレンス
+
+- [API リファレンス](references/api-reference.md) - `@xrift/world-components` の全フック・コンポーネント・定数の仕様
+- [コードテンプレート](references/code-templates.md) - GLBモデル、テクスチャ、Skybox、インタラクション等の実装パターン
+- [型定義](references/type-definitions.md) - User, PlayerMovement, VRTrackingData, TeleportDestination の型定義
+
 ## 最重要ルール（必ず守ること）
 
 1. **アセット読み込みは必ず `useXRift()` の `baseUrl` を使用**
