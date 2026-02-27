@@ -1,16 +1,16 @@
-# 型定義
+# Type Definitions
 
-XRift ワールドで使用される主要な型定義。
+Core type definitions used in XRift worlds.
 
 ## User
 
-ユーザー情報を表す型。`useUsers()` フックから取得される。
+Represents user information. Retrieved from the `useUsers()` hook.
 
 ```typescript
 interface User {
-  id: string           // 認証ユーザーID
-  socketId: string     // ソケット接続ID
-  displayName: string  // 表示名
+  id: string           // Authenticated user ID
+  socketId: string     // Socket connection ID
+  displayName: string  // Display name
   avatarUrl: string | null
   isGuest: boolean
 }
@@ -18,25 +18,25 @@ interface User {
 
 ## PlayerMovement
 
-プレイヤーの移動状態を表す型。`getMovement()` / `getLocalMovement()` から取得される。
+Represents a player's movement state. Retrieved from `getMovement()` / `getLocalMovement()`.
 
 ```typescript
 interface PlayerMovement {
   position: { x: number; y: number; z: number }
-  direction: { x: number; z: number }  // 移動方向（正規化）
-  horizontalSpeed: number              // XZ平面速度
-  verticalSpeed: number                // Y軸速度
+  direction: { x: number; z: number }  // Movement direction (normalized)
+  horizontalSpeed: number              // XZ-plane speed
+  verticalSpeed: number                // Y-axis speed
   rotation: { yaw: number; pitch: number }
   isGrounded: boolean
   isJumping: boolean
   isInVR?: boolean
-  vrTracking?: VRTrackingData  // VRモード時のみ
+  vrTracking?: VRTrackingData  // Only present in VR mode
 }
 ```
 
 ## VRTrackingData
 
-VRモード時のトラッキング情報。`PlayerMovement.vrTracking` から取得される。
+VR mode tracking information. Retrieved from `PlayerMovement.vrTracking`.
 
 ```typescript
 interface VRTrackingData {
@@ -51,11 +51,11 @@ interface VRTrackingData {
 
 ## TeleportDestination
 
-テレポート先を表す型。`useTeleport()` の `teleport()` に渡す。
+Represents a teleport destination. Passed to `teleport()` from `useTeleport()`.
 
 ```typescript
 interface TeleportDestination {
   position: [number, number, number]
-  yaw?: number  // 度数法（0-360）、省略時は現在の向きを維持
+  yaw?: number  // Degrees (0-360). If omitted, the player's current facing direction is preserved.
 }
 ```

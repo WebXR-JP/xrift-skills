@@ -1,68 +1,68 @@
 ---
 name: xrift-world
-description: XRiftプラットフォーム用WebXRワールド制作ガイド。React Three Fiber + Rapier物理エンジン + @xrift/world-components APIのフック、コンポーネント、コードテンプレート、型定義。
+description: Guide for building WebXR worlds on the XRift platform. Covers React Three Fiber + Rapier physics engine + @xrift/world-components API hooks, components, code templates, and type definitions.
 ---
 
-# XRift World 制作ガイド
+# XRift World Development Guide
 
-XRiftプラットフォーム用WebXRワールドを作成・修正する際のガイドです。
+A guide for creating and modifying WebXR worlds for the XRift platform.
 
-## 詳細リファレンス
+## References
 
-- [API リファレンス](references/api-reference.md) - `@xrift/world-components` の全フック・コンポーネント・定数の仕様
-- [コードテンプレート](references/code-templates.md) - GLBモデル、テクスチャ、Skybox、インタラクション等の実装パターン
-- [型定義](references/type-definitions.md) - User, PlayerMovement, VRTrackingData, TeleportDestination の型定義
+- [API Reference](references/api-reference.md) - Full specification of all hooks, components, and constants in `@xrift/world-components`
+- [Code Templates](references/code-templates.md) - Implementation patterns for GLB models, textures, Skybox, interactions, and more
+- [Type Definitions](references/type-definitions.md) - Type definitions for User, PlayerMovement, VRTrackingData, TeleportDestination
 
-## 最重要ルール（必ず守ること）
+## Critical Rules (Must Follow)
 
-1. **アセット読み込みは必ず `useXRift()` の `baseUrl` を使用**
-2. **アセットファイルは `public/` ディレクトリに配置**
-3. **`baseUrl` は末尾に `/` を含むため、`${baseUrl}path` で結合**（`${baseUrl}/path` は NG）
+1. **Always use `baseUrl` from `useXRift()` when loading assets**
+2. **Place asset files in the `public/` directory**
+3. **`baseUrl` includes a trailing `/`, so join with `${baseUrl}path`** (`${baseUrl}/path` is WRONG)
 
 ```typescript
-// 正しい
+// Correct
 const { baseUrl } = useXRift()
 const model = useGLTF(`${baseUrl}robot.glb`)
 
-// 間違い
-const model = useGLTF('/robot.glb')           // 絶対パス NG
-const model = useGLTF(`${baseUrl}/robot.glb`) // 余分な / NG
+// Wrong
+const model = useGLTF('/robot.glb')           // Absolute path - NG
+const model = useGLTF(`${baseUrl}/robot.glb`) // Extra / - NG
 ```
 
-## プロジェクト概要
+## Project Overview
 
-- **用途**: XRiftプラットフォーム用WebXRワールド
-- **技術**: React Three Fiber + Rapier物理エンジン + Module Federation
-- **動作**: CDNにアップロード後、フロントエンドから動的ロード
+- **Purpose**: WebXR worlds for the XRift platform
+- **Tech Stack**: React Three Fiber + Rapier physics engine + Module Federation
+- **How It Works**: Uploaded to CDN, dynamically loaded by the frontend
 
-## プロジェクト構造
+## Project Structure
 
 ```
 xrift-world-template/
-├── public/              # アセットファイル（直接配置、サブディレクトリ不要）
+├── public/              # Asset files (place directly, no subdirectories needed)
 │   ├── model.glb
 │   ├── texture.jpg
 │   └── skybox.jpg
 ├── src/
-│   ├── components/      # 3Dコンポーネント
-│   ├── World.tsx        # メインワールドコンポーネント
-│   ├── dev.tsx          # 開発用エントリーポイント
-│   ├── index.tsx        # 本番用エクスポート
-│   └── constants.ts     # 定数定義
-├── .triplex/            # Triplex（3Dエディタ）設定
-├── xrift.json           # XRift CLI設定
-├── vite.config.ts       # ビルド設定（Module Federation）
+│   ├── components/      # 3D components
+│   ├── World.tsx        # Main world component
+│   ├── dev.tsx          # Development entry point
+│   ├── index.tsx        # Production export
+│   └── constants.ts     # Constants
+├── .triplex/            # Triplex (3D editor) config
+├── xrift.json           # XRift CLI config
+├── vite.config.ts       # Build config (Module Federation)
 └── package.json
 ```
 
-## xrift.json 設定
+## xrift.json Configuration
 
-### physics（物理演算設定）
+### physics (Physics Settings)
 
-| 項目 | 型 | デフォルト値 | 説明 |
-|------|-----|-----------|------|
-| `gravity` | number | 9.81 | 重力の強さ（正の値、地球=9.81、月=1.62、木星=24.79） |
-| `allowInfiniteJump` | boolean | true | 無限ジャンプを許可するか |
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `gravity` | number | 9.81 | Gravity strength (positive value; Earth=9.81, Moon=1.62, Jupiter=24.79) |
+| `allowInfiniteJump` | boolean | true | Whether to allow infinite jumping |
 
 ```json
 {
@@ -73,111 +73,111 @@ xrift-world-template/
 }
 ```
 
-**設定例**:
-- **アスレチックワールド**: `"allowInfiniteJump": false` で落下のリスクを追加
-- **低重力ワールド**: `"gravity": 1.62`（月の重力）でふわふわした動き
-- **高重力ワールド**: `"gravity": 24.79`（木星の重力）で重厚な動き
+**Examples**:
+- **Obstacle course world**: `"allowInfiniteJump": false` to add fall risk
+- **Low gravity world**: `"gravity": 1.62` (Moon gravity) for floaty movement
+- **High gravity world**: `"gravity": 24.79` (Jupiter gravity) for heavy movement
 
-## コマンドリファレンス
+## Command Reference
 
 ```bash
-# 開発
-npm run dev        # 開発サーバー起動 (http://localhost:5173)
-npm run build      # 本番ビルド
-npm run typecheck  # 型チェック
+# Development
+npm run dev        # Start dev server (http://localhost:5173)
+npm run build      # Production build
+npm run typecheck  # Type checking
 
 # XRift CLI
-xrift login        # 認証
-xrift create       # 新規プロジェクト作成
-xrift upload world # ワールドをアップロード
-xrift whoami       # ログインユーザー確認
-xrift logout       # ログアウト
+xrift login        # Authenticate
+xrift create       # Create new project
+xrift upload world # Upload world
+xrift whoami       # Check logged-in user
+xrift logout       # Log out
 ```
 
-## 開発環境での動作確認
+## Development Environment
 
-`npm run dev` で開発サーバーを起動すると、一人称視点でワールドを操作・テストできる。
+Run `npm run dev` to start the dev server. You can navigate and test the world in first-person view.
 
-| 操作 | キー |
-|------|------|
-| 視点操作 | 画面クリックでマウスロック → マウス移動 |
-| 移動 | W / A / S / D |
-| 上昇 / 下降 | E・Space / Q |
-| インタラクト | 照準を合わせてクリック |
-| マウスロック解除 | ESC |
+| Action | Key |
+|--------|-----|
+| Look around | Click to lock mouse, then move mouse |
+| Move | W / A / S / D |
+| Ascend / Descend | E or Space / Q |
+| Interact | Aim crosshair and click |
+| Release mouse lock | ESC |
 
-`Interactable` コンポーネントのクリック動作も開発環境で確認可能（画面中央の Raycaster が `LAYERS.INTERACTABLE` レイヤーを検出）。
+`Interactable` component click behavior can also be tested in the dev environment (the center Raycaster detects the `LAYERS.INTERACTABLE` layer).
 
-### dev.tsx の構成
+### dev.tsx Structure
 
-`src/dev.tsx` は開発専用のエントリーポイント。本番ビルドには含まれない。
+`src/dev.tsx` is the development-only entry point. It is not included in the production build.
 
-**注意**: 本番環境では `XRiftProvider` は不要（フロントエンド側が自動でラップ）
+**Note**: `XRiftProvider` is not needed in production (the frontend wraps it automatically).
 
-## 依存パッケージ
+## Dependencies
 
-### 必須（peerDependencies）
+### Required (peerDependencies)
 - `react` / `react-dom` ^19.0.0
 - `three` ^0.182.0
 - `@react-three/fiber` ^9.3.0
 - `@react-three/drei` ^10.7.3
 - `@react-three/rapier` ^2.1.0
 
-### XRift固有
-- `@xrift/world-components` - XRiftのフック・コンポーネント
+### XRift-specific
+- `@xrift/world-components` - XRift hooks and components
 
-## トラブルシューティング
+## Troubleshooting
 
 ### "useXRift must be used within XRiftProvider"
 
-**原因**: `XRiftProvider` でラップされていない
+**Cause**: Not wrapped with `XRiftProvider`
 
-**解決方法**:
-- `src/dev.tsx` で `XRiftProvider` を使用しているか確認
-- Triplex使用時: `.triplex/provider.tsx` を確認
+**Solution**:
+- Check that `src/dev.tsx` uses `XRiftProvider`
+- When using Triplex: check `.triplex/provider.tsx`
 
-### アセットが読み込めない
+### Assets fail to load
 
-**原因**: `baseUrl` を使用していない、またはパス結合が間違っている
+**Cause**: Not using `baseUrl`, or incorrect path concatenation
 
-**解決方法**:
+**Solution**:
 ```typescript
-// 正しい
+// Correct
 const { baseUrl } = useXRift()
 const model = useGLTF(`${baseUrl}robot.glb`)
 
-// 間違い
+// Wrong
 const model = useGLTF('/robot.glb')
 const model = useGLTF(`${baseUrl}/robot.glb`)
 ```
 
-### 物理演算が効かない
+### Physics not working
 
-**原因**: `Physics` コンポーネントでラップされていない、または `RigidBody` がない
+**Cause**: Not wrapped with `Physics` component, or missing `RigidBody`
 
-**解決方法**:
+**Solution**:
 ```typescript
 <Physics>
-  <RigidBody type="fixed">  {/* または "dynamic" */}
+  <RigidBody type="fixed">  {/* or "dynamic" */}
     <mesh>...</mesh>
   </RigidBody>
 </Physics>
 ```
 
-## 参考リンク
+## Links
 
-- [XRift ドキュメント](https://docs.xrift.net)
+- [XRift Documentation](https://docs.xrift.net)
 - [XRift CLI (GitHub)](https://github.com/WebXR-JP/xrift-cli)
 - [React Three Fiber](https://docs.pmnd.rs/react-three-fiber)
 - [Rapier Physics](https://rapier.rs/docs/)
-- [Triplex（ビジュアルエディタ）](https://triplex.dev/)
+- [Triplex (Visual Editor)](https://triplex.dev/)
 
-## 実装例の参照先
+## Example Implementations
 
-- **GLBモデル**: `src/components/Duck/index.tsx`
+- **GLB model**: `src/components/Duck/index.tsx`
 - **Skybox**: `src/components/Skybox/index.tsx`
-- **アニメーション**: `src/components/RotatingObject/index.tsx`
-- **インタラクション**: `src/components/InteractableButton/index.tsx`
-- **ユーザー追跡**: `src/components/RemoteUserHUDs/index.tsx`
-- **テレポート**: `src/components/TeleportPortal/index.tsx`
-- **メインワールド**: `src/World.tsx`
+- **Animation**: `src/components/RotatingObject/index.tsx`
+- **Interaction**: `src/components/InteractableButton/index.tsx`
+- **User tracking**: `src/components/RemoteUserHUDs/index.tsx`
+- **Teleport**: `src/components/TeleportPortal/index.tsx`
+- **Main world**: `src/World.tsx`

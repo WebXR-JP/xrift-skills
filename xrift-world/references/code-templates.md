@@ -1,8 +1,8 @@
-# コードテンプレート
+# Code Templates
 
-XRift ワールド開発でよく使うパターンのテンプレート集。
+Common implementation patterns for XRift world development.
 
-## GLBモデル読み込み
+## Loading a GLB Model
 
 ```typescript
 import { useXRift } from '@xrift/world-components'
@@ -21,7 +21,7 @@ export const MyModel = () => {
 }
 ```
 
-## テクスチャ読み込み（単体）
+## Loading a Single Texture
 
 ```typescript
 import { useXRift } from '@xrift/world-components'
@@ -40,7 +40,7 @@ export const TexturedMesh = () => {
 }
 ```
 
-## 複数テクスチャ（PBR）
+## Multiple Textures (PBR)
 
 ```typescript
 import { useXRift } from '@xrift/world-components'
@@ -64,7 +64,7 @@ export const PBRMaterial = () => {
 }
 ```
 
-## Skybox（360度パノラマ背景）
+## Skybox (360-degree Panorama Background)
 
 ```typescript
 import { useXRift } from '@xrift/world-components'
@@ -84,20 +84,20 @@ export const Skybox = ({ radius = 500 }) => {
 }
 ```
 
-## インタラクション + 状態同期
+## Interaction + State Synchronization
 
 ```typescript
 import { Interactable, useInstanceState } from '@xrift/world-components'
 
 export const InteractiveButton = ({ id }: { id: string }) => {
-  // useInstanceState: 全ユーザー間で同期される状態
+  // useInstanceState: State synchronized across all users
   const [clickCount, setClickCount] = useInstanceState(`${id}-count`, 0)
 
   return (
     <Interactable
       id={id}
       onInteract={() => setClickCount((prev) => prev + 1)}
-      interactionText={`クリック回数: ${clickCount}`}
+      interactionText={`Click count: ${clickCount}`}
     >
       <mesh>
         <boxGeometry args={[1, 1, 0.2]} />
@@ -108,7 +108,7 @@ export const InteractiveButton = ({ id }: { id: string }) => {
 }
 ```
 
-## アニメーション（useFrame）
+## Animation (useFrame)
 
 ```typescript
 import { useRef } from 'react'
@@ -133,9 +133,9 @@ export const RotatingCube = ({ speed = 1 }) => {
 }
 ```
 
-## テレポート（Interactable方式）
+## Teleport (Interactable Method)
 
-クリックでテレポートするパターン。
+Click-to-teleport pattern.
 
 ```typescript
 import { useTeleport, Interactable } from '@xrift/world-components'
@@ -146,7 +146,7 @@ export const TeleportButton = () => {
     <Interactable
       id="tp-button"
       onInteract={() => teleport({ position: [50, 0, 30], yaw: 180 })}
-      interactionText="テレポート"
+      interactionText="Teleport"
     >
       <mesh>
         <boxGeometry />
@@ -157,9 +157,9 @@ export const TeleportButton = () => {
 }
 ```
 
-## テレポート（sensor方式）
+## Teleport (Sensor Method)
 
-触れたらテレポートするワープゾーンパターン。
+Warp zone pattern that teleports on contact.
 
 ```typescript
 import { useCallback } from 'react'
@@ -183,9 +183,9 @@ export const TeleportZone = () => {
 }
 ```
 
-**注意**: sensor 方式でワープゾーンを作る場合、テレポート先が別のポータルと重ならないようにすること（着地即ワープのループになる）
+**Note**: When creating warp zones with the sensor method, make sure the teleport destination does not overlap with another portal (this would cause an infinite teleport loop on landing).
 
-## ユーザー位置追跡
+## User Position Tracking
 
 ```typescript
 import { useFrame } from '@react-three/fiber'
@@ -195,11 +195,11 @@ export const UserTracker = () => {
   const { remoteUsers, getMovement, getLocalMovement } = useUsers()
 
   useFrame(() => {
-    // 自分の位置
+    // Local player position
     const myMovement = getLocalMovement()
     console.log('My position:', myMovement.position)
 
-    // 他ユーザーの位置
+    // Remote player positions
     remoteUsers.forEach((user) => {
       const movement = getMovement(user.socketId)
       if (movement) {

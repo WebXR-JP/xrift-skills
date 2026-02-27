@@ -1,33 +1,33 @@
-# @xrift/world-components API リファレンス
+# @xrift/world-components API Reference
 
-## フック
+## Hooks
 
 ### useXRift()
 
-アセットURL取得用フック。ワールド内のアセット読み込みに必須。
+Hook for getting asset URLs. Required for loading assets within a world.
 
-**戻り値**: `{ baseUrl: string }`
+**Returns**: `{ baseUrl: string }`
 
 ```typescript
 import { useXRift } from '@xrift/world-components'
 
 const { baseUrl } = useXRift()
-// baseUrl は末尾に / を含む
-// 正しい: `${baseUrl}model.glb`
-// 間違い: `${baseUrl}/model.glb`
+// baseUrl includes a trailing /
+// Correct: `${baseUrl}model.glb`
+// Wrong:   `${baseUrl}/model.glb`
 ```
 
 ### useInstanceState(key, initialValue)
 
-全ユーザー間で状態を同期するフック。ワールドインスタンス内の全プレイヤーで共有される。
+Hook for synchronizing state across all users. Shared among all players within a world instance.
 
-**引数**:
-| 引数 | 型 | 説明 |
-|------|-----|------|
-| `key` | `string` | 状態の一意キー |
-| `initialValue` | `T` | 初期値 |
+**Parameters**:
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `key` | `string` | Unique key for the state |
+| `initialValue` | `T` | Initial value |
 
-**戻り値**: `[T, (value: T | ((prev: T) => T)) => void]`
+**Returns**: `[T, (value: T | ((prev: T) => T)) => void]`
 
 ```typescript
 import { useInstanceState } from '@xrift/world-components'
@@ -38,15 +38,15 @@ setCount(prev => prev + 1)
 
 ### useUsers()
 
-ユーザー情報・位置取得フック。
+Hook for getting user information and positions.
 
-**戻り値**:
-| プロパティ | 型 | 説明 |
-|-----------|-----|------|
-| `localUser` | `User` | 自分のユーザー情報 |
-| `remoteUsers` | `User[]` | 他のユーザー一覧 |
-| `getMovement(socketId)` | `(id: string) => PlayerMovement \| null` | 指定ユーザーの移動情報取得 |
-| `getLocalMovement()` | `() => PlayerMovement` | 自分の移動情報取得 |
+**Returns**:
+| Property | Type | Description |
+|----------|------|-------------|
+| `localUser` | `User` | Current user's information |
+| `remoteUsers` | `User[]` | List of other users |
+| `getMovement(socketId)` | `(id: string) => PlayerMovement \| null` | Get movement data for a specific user |
+| `getLocalMovement()` | `() => PlayerMovement` | Get current user's movement data |
 
 ```typescript
 import { useUsers } from '@xrift/world-components'
@@ -56,9 +56,9 @@ const { localUser, remoteUsers, getMovement, getLocalMovement } = useUsers()
 
 ### useSpawnPoint()
 
-スポーン地点取得フック。
+Hook for getting the spawn point.
 
-**戻り値**: `{ position: [number, number, number], yaw: number }`
+**Returns**: `{ position: [number, number, number], yaw: number }`
 
 ```typescript
 import { useSpawnPoint } from '@xrift/world-components'
@@ -68,15 +68,15 @@ const { position, yaw } = useSpawnPoint()
 
 ### useScreenShareContext()
 
-画面共有状態フック。
+Hook for screen sharing state.
 
-**戻り値**:
-| プロパティ | 型 | 説明 |
-|-----------|-----|------|
-| `videoElement` | `HTMLVideoElement \| null` | 画面共有の映像要素 |
-| `isSharing` | `boolean` | 共有中かどうか |
-| `startScreenShare` | `() => void` | 画面共有開始 |
-| `stopScreenShare` | `() => void` | 画面共有停止 |
+**Returns**:
+| Property | Type | Description |
+|----------|------|-------------|
+| `videoElement` | `HTMLVideoElement \| null` | Screen share video element |
+| `isSharing` | `boolean` | Whether currently sharing |
+| `startScreenShare` | `() => void` | Start screen sharing |
+| `stopScreenShare` | `() => void` | Stop screen sharing |
 
 ```typescript
 import { useScreenShareContext } from '@xrift/world-components'
@@ -86,12 +86,12 @@ const { videoElement, isSharing, startScreenShare, stopScreenShare } = useScreen
 
 ### useTeleport()
 
-プレイヤー瞬間移動フック。
+Hook for instant player teleportation.
 
-**戻り値**: `{ teleport: (dest: TeleportDestination) => void }`
+**Returns**: `{ teleport: (dest: TeleportDestination) => void }`
 
 `TeleportDestination`: `{ position: [number, number, number], yaw?: number }`
-- `yaw` は度数法（0-360）、省略時は現在の向きを維持
+- `yaw` is in degrees (0-360). If omitted, the player's current facing direction is preserved.
 
 ```typescript
 import { useTeleport } from '@xrift/world-components'
@@ -100,23 +100,23 @@ const { teleport } = useTeleport()
 teleport({ position: [50, 0, 30], yaw: 180 })
 ```
 
-[useTeleport ドキュメント](https://docs.xrift.net/world-components/components/#useteleport)
+[useTeleport Documentation](https://docs.xrift.net/world-components/components/#useteleport)
 
 ---
 
-## コンポーネント
+## Components
 
 ### Interactable
 
-クリック可能なインタラクティブオブジェクト。子オブジェクトに自動で `LAYERS.INTERACTABLE` を設定する。
+A clickable interactive object. Automatically sets `LAYERS.INTERACTABLE` on child objects.
 
 **Props**:
-| Prop | 型 | 必須 | 説明 |
-|------|-----|------|------|
-| `id` | `string` | 必須 | 一意の識別子 |
-| `onInteract` | `() => void` | 必須 | クリック時のコールバック |
-| `interactionText` | `string` | 任意 | ホバー時に表示するテキスト |
-| `enabled` | `boolean` | 任意 | インタラクション有効/無効 |
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `id` | `string` | Yes | Unique identifier |
+| `onInteract` | `() => void` | Yes | Callback when clicked |
+| `interactionText` | `string` | No | Text displayed on hover |
+| `enabled` | `boolean` | No | Enable/disable interaction |
 
 ```typescript
 import { Interactable } from '@xrift/world-components'
@@ -124,7 +124,7 @@ import { Interactable } from '@xrift/world-components'
 <Interactable
   id="my-button"
   onInteract={() => console.log('clicked')}
-  interactionText="クリック"
+  interactionText="Click me"
 >
   <mesh>
     <boxGeometry args={[1, 1, 0.2]} />
@@ -135,13 +135,13 @@ import { Interactable } from '@xrift/world-components'
 
 ### SpawnPoint
 
-プレイヤー出現地点。
+Player spawn location.
 
 **Props**:
-| Prop | 型 | 必須 | 説明 |
-|------|-----|------|------|
-| `position` | `[number, number, number]` | 任意 | 出現位置 |
-| `yaw` | `number` | 任意 | 向き（0-360度） |
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `position` | `[number, number, number]` | No | Spawn position |
+| `yaw` | `number` | No | Facing direction (0-360 degrees) |
 
 ```typescript
 import { SpawnPoint } from '@xrift/world-components'
@@ -151,16 +151,16 @@ import { SpawnPoint } from '@xrift/world-components'
 
 ### Mirror
 
-反射面コンポーネント。
+Reflective surface component.
 
 **Props**:
-| Prop | 型 | 必須 | 説明 |
-|------|-----|------|------|
-| `position` | `[number, number, number]` | 任意 | 位置 |
-| `rotation` | `[number, number, number]` | 任意 | 回転 |
-| `size` | `[number, number]` | 任意 | サイズ |
-| `color` | `string` | 任意 | 色 |
-| `textureResolution` | `number` | 任意 | テクスチャ解像度 |
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `position` | `[number, number, number]` | No | Position |
+| `rotation` | `[number, number, number]` | No | Rotation |
+| `size` | `[number, number]` | No | Size |
+| `color` | `string` | No | Color |
+| `textureResolution` | `number` | No | Texture resolution |
 
 ```typescript
 import { Mirror } from '@xrift/world-components'
@@ -170,19 +170,19 @@ import { Mirror } from '@xrift/world-components'
 
 ### VideoPlayer
 
-UI付き動画再生コンポーネント。UIコントロール付き（再生/一時停止、進捗バー、音量調整、URL入力）、VR対応。
+Video player component with UI controls (play/pause, progress bar, volume, URL input). VR-compatible.
 
 **Props**:
-| Prop | 型 | 必須 | 説明 |
-|------|-----|------|------|
-| `id` | `string` | 必須 | 一意の識別子 |
-| `url` | `string` | 必須 | 動画URL |
-| `position` | `[number, number, number]` | 任意 | 位置 |
-| `rotation` | `[number, number, number]` | 任意 | 回転 |
-| `width` | `number` | 任意 | 横幅 |
-| `playing` | `boolean` | 任意 | 再生状態 |
-| `volume` | `number` | 任意 | 音量 |
-| `sync` | `boolean` | 任意 | ユーザー間同期 |
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `id` | `string` | Yes | Unique identifier |
+| `url` | `string` | Yes | Video URL |
+| `position` | `[number, number, number]` | No | Position |
+| `rotation` | `[number, number, number]` | No | Rotation |
+| `width` | `number` | No | Width |
+| `playing` | `boolean` | No | Playing state |
+| `volume` | `number` | No | Volume |
+| `sync` | `boolean` | No | Sync playback across users |
 
 ```typescript
 import { VideoPlayer } from '@xrift/world-components'
@@ -197,15 +197,15 @@ import { VideoPlayer } from '@xrift/world-components'
 
 ### ScreenShareDisplay
 
-画面共有表示コンポーネント。
+Screen share display component.
 
 **Props**:
-| Prop | 型 | 必須 | 説明 |
-|------|-----|------|------|
-| `id` | `string` | 必須 | 一意の識別子 |
-| `position` | `[number, number, number]` | 任意 | 位置 |
-| `rotation` | `[number, number, number]` | 任意 | 回転 |
-| `width` | `number` | 任意 | 横幅 |
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `id` | `string` | Yes | Unique identifier |
+| `position` | `[number, number, number]` | No | Position |
+| `rotation` | `[number, number, number]` | No | Rotation |
+| `width` | `number` | No | Width |
 
 ```typescript
 import { ScreenShareDisplay } from '@xrift/world-components'
@@ -215,30 +215,30 @@ import { ScreenShareDisplay } from '@xrift/world-components'
 
 ---
 
-## 定数
+## Constants
 
-### LAYERS（Three.js レイヤー定数）
+### LAYERS (Three.js Layer Constants)
 
-Three.js のカメラとオブジェクトは 32 のレイヤー（0-31）を持ち、カメラは有効化されたレイヤーに属するオブジェクトのみをレンダリングする。
+Three.js cameras and objects have 32 layers (0-31). A camera only renders objects belonging to its enabled layers.
 
-| 定数名 | 値 | 用途 |
-|--------|-----|------|
-| `LAYERS.DEFAULT` | 0 | デフォルトレイヤー（すべてのオブジェクトが初期状態で属する） |
-| `LAYERS.FIRST_PERSON_ONLY` | 9 | 一人称視点のみ表示（VRM のヘッドレスコピー用） |
-| `LAYERS.THIRD_PERSON_ONLY` | 10 | 三人称視点のみ表示（他プレイヤーやミラー用） |
-| `LAYERS.INTERACTABLE` | 11 | インタラクト可能オブジェクト（Raycast 検出用） |
+| Constant | Value | Purpose |
+|----------|-------|---------|
+| `LAYERS.DEFAULT` | 0 | Default layer (all objects belong to this initially) |
+| `LAYERS.FIRST_PERSON_ONLY` | 9 | First-person view only (for VRM headless copy) |
+| `LAYERS.THIRD_PERSON_ONLY` | 10 | Third-person view only (for other players and mirrors) |
+| `LAYERS.INTERACTABLE` | 11 | Interactable objects (for Raycast detection) |
 
 ```typescript
 import { LAYERS } from '@xrift/world-components'
 ```
 
-**仕組み**:
-- `Interactable` コンポーネントは子オブジェクトに自動で `LAYERS.INTERACTABLE` を設定する
-- 本番環境ではフロントエンド側が `LAYERS.INTERACTABLE` レイヤーで Raycast を行いインタラクションを検出する
-- 開発環境（`dev.tsx`）でインタラクションをテストする場合、Raycaster のレイヤーを `LAYERS.INTERACTABLE` に設定する必要がある
+**How It Works**:
+- The `Interactable` component automatically sets `LAYERS.INTERACTABLE` on child objects
+- In production, the frontend performs Raycasts on the `LAYERS.INTERACTABLE` layer to detect interactions
+- In the dev environment (`dev.tsx`), you need to set the Raycaster layer to `LAYERS.INTERACTABLE` to test interactions
 
 ```typescript
-// Raycaster でインタラクト可能オブジェクトのみを検出
+// Detect only interactable objects with Raycaster
 const raycaster = new Raycaster()
-raycaster.layers.set(LAYERS.INTERACTABLE) // レイヤー11のオブジェクトのみヒット
+raycaster.layers.set(LAYERS.INTERACTABLE) // Only hits objects on layer 11
 ```
