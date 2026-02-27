@@ -1,32 +1,42 @@
 # XRift Skills
 
-[Agent Skills](https://github.com/vercel-labs/skills) for building XRift worlds.
-Provides essential information for AI coding agents (Claude Code, Cursor, Copilot, Codex, etc.) when creating XRift worlds.
+[English](README.en.md)
 
-## Installation
+XRift ワールド制作のための [Agent Skills](https://github.com/vercel-labs/skills)。
+AI コーディングエージェント（Claude Code, Cursor, Copilot, Codex 等）で XRift ワールドを作成する際に必要な情報を提供します。
+
+## インストール
 
 ```bash
 npx skills add WebXR-JP/xrift-skills
 ```
 
-## Included Skills
+## 含まれるスキル
 
 ### xrift-world
 
-A guide for building WebXR worlds on the XRift platform.
+XRift プラットフォーム用 WebXR ワールド制作ガイド。
 
-- **SKILL.md** - Critical rules, project overview, configuration, commands, troubleshooting
-- **references/api-reference.md** - Full specification of `@xrift/world-components` hooks, components, and constants
-- **references/code-templates.md** - Code templates for GLB models, textures, Skybox, interactions, and more
-- **references/type-definitions.md** - Type definitions for User, PlayerMovement, VRTrackingData, etc.
+- **SKILL.md** - 最重要ルール、プロジェクト概要、設定、コマンド、トラブルシューティング
+- **references/api-reference.md** - `@xrift/world-components` のフック・コンポーネント・定数の全仕様
+- **references/code-templates.md** - GLB モデル、テクスチャ、Skybox、インタラクション等のコードテンプレート
+- **references/type-definitions.md** - User, PlayerMovement, VRTrackingData 等の型定義
 
-## Links
+## 更新
 
-- [XRift Documentation](https://docs.xrift.net)
+インストール済みのスキルを最新版に更新するには：
+
+```bash
+npx skills update
+```
+
+## 関連リンク
+
+- [XRift ドキュメント](https://docs.xrift.net)
 - [xrift-world-template](https://github.com/WebXR-JP/xrift-world-template)
 - [XRift CLI](https://github.com/WebXR-JP/xrift-cli)
 - [Agent Skills Directory](https://skills.sh)
 
-## License
+## ライセンス
 
 MIT
