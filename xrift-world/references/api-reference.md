@@ -84,6 +84,32 @@ import { useScreenShareContext } from '@xrift/world-components'
 const { videoElement, isSharing, startScreenShare, stopScreenShare } = useScreenShareContext()
 ```
 
+### useConfirm()
+
+Hook for showing a confirmation modal to the user. Useful for confirming important actions like world navigation. Also serves as a workaround for iOS Safari's popup blocker — by prompting user interaction through the confirmation dialog, it creates a user-gesture event chain that allows `window.open` and external navigation to proceed without being blocked.
+
+**Returns**: `{ requestConfirm: (options: ConfirmOptions) => Promise<boolean> }`
+
+`ConfirmOptions`:
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `title` | `string` | No | Dialog title |
+| `message` | `string` | Yes | Message displayed to the user |
+| `confirmLabel` | `string` | No | Label for the confirm button |
+| `cancelLabel` | `string` | No | Label for the cancel button |
+
+The returned `Promise<boolean>` resolves to `true` if the user confirms, `false` if cancelled.
+
+```typescript
+import { useConfirm } from '@xrift/world-components'
+
+const { requestConfirm } = useConfirm()
+const ok = await requestConfirm({ message: 'ワールドを移動しますか？' })
+if (ok) {
+  // proceed with action
+}
+```
+
 ### useTeleport()
 
 Hook for instant player teleportation.
