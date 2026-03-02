@@ -49,6 +49,29 @@ interface VRTrackingData {
 }
 ```
 
+## ConfirmOptions
+
+Options passed to `requestConfirm()` from the `useConfirm()` hook.
+
+```typescript
+interface ConfirmOptions {
+  title?: string    // Dialog title
+  message: string   // Message displayed to the user
+  confirmLabel?: string  // Label for the confirm button
+  cancelLabel?: string   // Label for the cancel button
+}
+```
+
+## ConfirmContextValue
+
+Context value provided by `ConfirmContext`. Retrieved via the `useConfirm()` hook.
+
+```typescript
+interface ConfirmContextValue {
+  requestConfirm: (options: ConfirmOptions) => Promise<boolean>
+}
+```
+
 ## TeleportDestination
 
 Represents a teleport destination. Passed to `teleport()` from `useTeleport()`.

@@ -185,6 +185,38 @@ export const TeleportZone = () => {
 
 **Note**: When creating warp zones with the sensor method, make sure the teleport destination does not overlap with another portal (this would cause an infinite teleport loop on landing).
 
+## Confirm Before World Navigation
+
+Use `useConfirm` to ask the user for confirmation before navigating to another world. This also avoids iOS Safari's popup blocker by ensuring navigation is triggered from a user gesture.
+
+```typescript
+import { useConfirm, Interactable } from '@xrift/world-components'
+
+export const WorldPortal = ({ worldId }: { worldId: string }) => {
+  const { requestConfirm } = useConfirm()
+
+  const handleEnter = async () => {
+    const ok = await requestConfirm({ message: 'ワールドを移動しますか？' })
+    if (ok) {
+      window.location.href = `/worlds/${worldId}`
+    }
+  }
+
+  return (
+    <Interactable
+      id={`portal-${worldId}`}
+      onInteract={handleEnter}
+      interactionText="Enter World"
+    >
+      <mesh>
+        <boxGeometry args={[2, 3, 0.2]} />
+        <meshStandardMaterial color="cyan" />
+      </mesh>
+    </Interactable>
+  )
+}
+```
+
 ## User Position Tracking
 
 ```typescript
