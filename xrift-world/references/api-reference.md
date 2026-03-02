@@ -128,6 +128,54 @@ teleport({ position: [50, 0, 30], yaw: 180 })
 
 [useTeleport Documentation](https://docs.xrift.net/world-components/components/#useteleport)
 
+### useInstance(instanceId)
+
+Hook for fetching instance information and navigating to an instance with a confirmation dialog. Internally uses `InstanceContext` (injected by the platform) and `useConfirm` for the confirmation modal.
+
+**Parameters**:
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `instanceId` | `string` | Target instance ID |
+
+**Returns**:
+| Property | Type | Description |
+|----------|------|-------------|
+| `info` | `InstanceInfo \| null` | Instance information (fetched on mount) |
+| `navigateWithConfirm` | `() => Promise<void>` | Navigate to the instance with a confirmation modal |
+
+`navigateWithConfirm` fetches the latest instance info, shows a confirmation dialog with the world name, instance name, and current user count, then navigates on confirmation.
+
+```typescript
+import { useInstance } from '@xrift/world-components'
+
+const { info, navigateWithConfirm } = useInstance('target-instance-id')
+// info?.world.name — world name
+// info?.currentUsers — current user count
+// navigateWithConfirm() — navigate with confirmation
+```
+
+### useWorld(worldId)
+
+Hook for fetching world information. Internally uses `WorldContext` (injected by the platform).
+
+**Parameters**:
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `worldId` | `string` | Target world ID |
+
+**Returns**:
+| Property | Type | Description |
+|----------|------|-------------|
+| `info` | `WorldInfo \| null` | World information (fetched on mount) |
+
+```typescript
+import { useWorld } from '@xrift/world-components'
+
+const { info } = useWorld('target-world-id')
+// info?.name — world name
+// info?.thumbnailUrl — thumbnail URL
+```
+
 ---
 
 ## Components
@@ -218,6 +266,26 @@ import { VideoPlayer } from '@xrift/world-components'
   url="https://example.com/video.mp4"
   position={[0, 2, -5]}
   width={4}
+/>
+```
+
+### Portal
+
+A portal component for navigating to another instance. Displays the target instance's world thumbnail, name, and a vortex shader effect. When a player steps onto the pedestal, a confirmation modal is shown before navigating.
+
+**Props**:
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `instanceId` | `string` | Yes | Target instance ID |
+| `position` | `[number, number, number]` | No | Position (default: `[0, 0, 0]`) |
+| `rotation` | `[number, number, number]` | No | Rotation (default: `[0, 0, 0]`) |
+
+```typescript
+import { Portal } from '@xrift/world-components'
+
+<Portal
+  instanceId="target-instance-id"
+  position={[5, 0, 0]}
 />
 ```
 
