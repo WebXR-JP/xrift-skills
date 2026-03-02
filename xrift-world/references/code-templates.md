@@ -217,6 +217,71 @@ export const WorldPortal = ({ worldId }: { worldId: string }) => {
 }
 ```
 
+## Portal to Another Instance
+
+Place a portal that lets players navigate to another instance with a confirmation dialog.
+
+```typescript
+import { Portal } from '@xrift/world-components'
+
+export const MyWorld = () => {
+  return (
+    <>
+      {/* Portal to a specific instance */}
+      <Portal
+        instanceId="target-instance-id"
+        position={[5, 0, 0]}
+      />
+
+      {/* Multiple portals */}
+      <Portal
+        instanceId="another-instance-id"
+        position={[-5, 0, 0]}
+        rotation={[0, Math.PI, 0]}
+      />
+    </>
+  )
+}
+```
+
+## Instance / World Info Display
+
+Use `useInstance` or `useWorld` to fetch and display information about instances or worlds.
+
+```typescript
+import { Text } from '@react-three/drei'
+import { useInstance, useWorld } from '@xrift/world-components'
+
+export const InstanceInfoBoard = ({ instanceId }: { instanceId: string }) => {
+  const { info } = useInstance(instanceId)
+
+  if (!info) return null
+
+  return (
+    <group>
+      <Text position={[0, 2, 0]} fontSize={0.2} color="white">
+        {info.world.name}
+      </Text>
+      <Text position={[0, 1.7, 0]} fontSize={0.12} color="#cccccc">
+        {`${info.currentUsers}/${info.maxCapacity} players`}
+      </Text>
+    </group>
+  )
+}
+
+export const WorldInfoBoard = ({ worldId }: { worldId: string }) => {
+  const { info } = useWorld(worldId)
+
+  if (!info) return null
+
+  return (
+    <Text position={[0, 2, 0]} fontSize={0.2} color="white">
+      {info.name}
+    </Text>
+  )
+}
+```
+
 ## User Position Tracking
 
 ```typescript

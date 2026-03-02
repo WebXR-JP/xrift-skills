@@ -72,6 +72,84 @@ interface ConfirmContextValue {
 }
 ```
 
+## PortalProps
+
+Props for the `Portal` component.
+
+```typescript
+interface PortalProps {
+  instanceId: string
+  position?: [number, number, number]  // Default: [0, 0, 0]
+  rotation?: [number, number, number]  // Default: [0, 0, 0]
+}
+```
+
+## InstanceInfo
+
+Represents instance information. Retrieved from `useInstance()`.
+
+```typescript
+interface InstanceInfo {
+  id: string
+  name: string
+  description: string | null
+  currentUsers: number
+  maxCapacity: number
+  isPublic: boolean
+  allowGuests: boolean
+  owner?: {
+    id: string
+    displayName: string
+    userIconUrl?: string | null
+  }
+  world: WorldInfo
+}
+```
+
+## WorldInfo
+
+Represents world information. Retrieved from `useWorld()` or `InstanceInfo.world`.
+
+```typescript
+interface WorldInfo {
+  id: string
+  name: string
+  description: string | null
+  thumbnailUrl: string | null
+  isPublic: boolean
+  instanceCount: number
+  totalVisitCount: number
+  uniqueVisitorCount: number
+  favoriteCount: number
+  owner?: {
+    id: string
+    displayName: string
+    userIconUrl?: string | null
+  }
+}
+```
+
+## InstanceContextValue
+
+Context value provided by `InstanceContext`. Injected by the platform to provide instance data fetching and navigation.
+
+```typescript
+interface InstanceContextValue {
+  getInstanceInfo: (instanceId: string) => Promise<InstanceInfo>
+  navigateToInstance: (instanceId: string) => void
+}
+```
+
+## WorldContextValue
+
+Context value provided by `WorldContext`. Injected by the platform to provide world data fetching.
+
+```typescript
+interface WorldContextValue {
+  getWorldInfo: (worldId: string) => Promise<WorldInfo>
+}
+```
+
 ## TeleportDestination
 
 Represents a teleport destination. Passed to `teleport()` from `useTeleport()`.
