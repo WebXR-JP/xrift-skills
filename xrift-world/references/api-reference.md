@@ -36,6 +36,40 @@ const [count, setCount] = useInstanceState('click-count', 0)
 setCount(prev => prev + 1)
 ```
 
+### useInstanceEvent(eventName, callback)
+
+Hook for sending and receiving instance events. Supports platform events (`user-joined`, `user-left`) for receiving, and custom events for both sending and receiving.
+
+**Parameters**:
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `eventName` | `string` | Event name |
+| `callback` | `(data: T) => void` | Callback when event is received |
+
+**Returns**: `(data: T) => void` — Emit function. Returns a no-op for platform events (`user-joined`, `user-left`).
+
+**Event Types**:
+| Type | Event Name | Send | Receive | Description |
+|------|-----------|:----:|:-------:|-------------|
+| Platform | `user-joined` | - | Yes | User joined the instance |
+| Platform | `user-left` | - | Yes | User left the instance |
+| Custom | Any string | Yes | Yes | World-specific custom events |
+
+```typescript
+import { useInstanceEvent } from '@xrift/world-components'
+
+// Receive platform events (receive only, cannot emit)
+useInstanceEvent('user-joined', (data) => {
+  console.log('User joined:', data)
+})
+
+// Send and receive custom events
+const emitReaction = useInstanceEvent('reaction', (data) => {
+  console.log('Reaction received:', data)
+})
+emitReaction({ emoji: '👍', userId: 'user-1' })
+```
+
 ### useUsers()
 
 Hook for getting user information and positions.

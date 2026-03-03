@@ -282,6 +282,65 @@ export const WorldInfoBoard = ({ worldId }: { worldId: string }) => {
 }
 ```
 
+## Instance Event (Reaction)
+
+Send and receive custom events across all users in the instance.
+
+```typescript
+import { useCallback, useState } from 'react'
+import { useInstanceEvent, Interactable } from '@xrift/world-components'
+
+export const ReactionButton = () => {
+  const [lastReaction, setLastReaction] = useState('')
+
+  const emitReaction = useInstanceEvent('reaction', (data: { emoji: string }) => {
+    setLastReaction(data.emoji)
+  })
+
+  const sendReaction = useCallback(
+    (emoji: string) => {
+      emitReaction({ emoji })
+    },
+    [emitReaction],
+  )
+
+  return (
+    <Interactable
+      id="reaction-button"
+      onInteract={() => sendReaction('👍')}
+      interactionText="Send Reaction"
+    >
+      <mesh>
+        <boxGeometry args={[1, 1, 0.2]} />
+        <meshStandardMaterial color="yellow" />
+      </mesh>
+    </Interactable>
+  )
+}
+```
+
+## Instance Event (Join/Leave Detection)
+
+Listen for platform events when users join or leave the instance.
+
+```typescript
+import { useInstanceEvent } from '@xrift/world-components'
+
+export const JoinLeaveNotifier = () => {
+  useInstanceEvent('user-joined', (data) => {
+    console.log('User joined:', data)
+  })
+
+  useInstanceEvent('user-left', (data) => {
+    console.log('User left:', data)
+  })
+
+  return null
+}
+```
+
+**Note**: Platform events (`user-joined`, `user-left`) are receive-only. The emit function returned by `useInstanceEvent` is a no-op for these events.
+
 ## User Position Tracking
 
 ```typescript
