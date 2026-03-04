@@ -162,6 +162,20 @@ teleport({ position: [50, 0, 30], yaw: 180 })
 
 [useTeleport Documentation](https://docs.xrift.net/world-components/components/#useteleport)
 
+### useBillboardY()
+
+Hook that returns a ref which automatically rotates the target Object3D to face the camera on the Y-axis only each render pass. Uses a sentinel Mesh's `onBeforeRender` internally, so it works correctly with Mirror (Reflector) — the virtual camera is used for rotation calculation during mirror render passes.
+
+**Returns**: `RefObject<T>` — Ref to attach to the target Object3D.
+
+```typescript
+import { useBillboardY } from '@xrift/world-components'
+import type { Mesh } from 'three'
+
+const ref = useBillboardY<Mesh>()
+<mesh ref={ref}>...</mesh>
+```
+
 ### useInstance(instanceId)
 
 Hook for fetching instance information and navigating to an instance with a confirmation dialog. Internally uses `InstanceContext` (injected by the platform) and `useConfirm` for the confirmation modal.
@@ -321,6 +335,25 @@ import { Portal } from '@xrift/world-components'
   instanceId="target-instance-id"
   position={[5, 0, 0]}
 />
+```
+
+### BillboardY
+
+Y-axis billboard component. Wraps children in a group that rotates on the Y-axis only to face the camera. Unlike drei's `<Billboard>` which rotates on all axes, this keeps the "up" direction intact — ideal for flames, particles, name plates, and signage.
+
+Works correctly with Mirror (Reflector) — objects display with the correct orientation in reflections.
+
+**Props**: Same as `<group>` (position, rotation, scale, etc.)
+
+```typescript
+import { BillboardY } from '@xrift/world-components'
+
+<BillboardY position={[0, 2, 0]}>
+  <mesh>
+    <planeGeometry args={[1, 1.5]} />
+    <meshBasicMaterial map={fireTexture} />
+  </mesh>
+</BillboardY>
 ```
 
 ### ScreenShareDisplay

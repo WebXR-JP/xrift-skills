@@ -282,6 +282,44 @@ export const WorldInfoBoard = ({ worldId }: { worldId: string }) => {
 }
 ```
 
+## Y-Axis Billboard (BillboardY)
+
+Make objects face the camera on Y-axis only. Useful for flames, particles, name plates, and signage. Works correctly with Mirror (Reflector) — objects display with the correct orientation in reflections.
+
+```typescript
+import { Text } from '@react-three/drei'
+import { BillboardY } from '@xrift/world-components'
+
+export const SignBoard = () => {
+  return (
+    <BillboardY position={[0, 2, 0]}>
+      <mesh>
+        <planeGeometry args={[2, 1]} />
+        <meshStandardMaterial color="#333" />
+      </mesh>
+      <Text position={[0, 0, 0.01]} fontSize={0.2} color="white">
+        Hello World
+      </Text>
+    </BillboardY>
+  )
+}
+```
+
+For InstancedMesh or custom logic, use the `useBillboardY` hook or `getBillboardYRotation` utility:
+
+```typescript
+import { useBillboardY, getBillboardYRotation } from '@xrift/world-components'
+import type { Mesh } from 'three'
+
+// Hook: auto-rotates the ref target each render pass (Mirror-compatible)
+const ref = useBillboardY<Mesh>()
+<mesh ref={ref}>...</mesh>
+
+// Utility: manual rotation calculation (e.g. for InstancedMesh)
+const rotation = getBillboardYRotation(cameraWorldPos, targetWorldPos)
+dummy.rotation.y = rotation
+```
+
 ## Instance Event (Reaction)
 
 Send and receive custom events across all users in the instance.
