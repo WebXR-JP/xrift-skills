@@ -11,7 +11,7 @@ interface User {
   id: string           // Authenticated user ID
   socketId: string     // Socket connection ID
   displayName: string  // Display name
-  avatarUrl: string | null
+  userIconUrl: string | null
   isGuest: boolean
 }
 ```
