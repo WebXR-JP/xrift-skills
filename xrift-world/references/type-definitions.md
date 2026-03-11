@@ -126,6 +126,10 @@ interface WorldInfo {
     displayName: string
     userIconUrl?: string | null
   }
+  permissions?: {
+    allowedDomains: string[]
+    allowedCodeRules: string[]
+  }
 }
 ```
 
