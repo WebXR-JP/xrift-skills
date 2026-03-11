@@ -127,11 +127,61 @@ interface WorldInfo {
     userIconUrl?: string | null
   }
   permissions?: {
-    allowedDomains: string[]
-    allowedCodeRules: string[]
+    allowedDomains: string[]   // Allowed external domains for network access
+    allowedCodeRules: string[] // Relaxed code security rules (see below)
   }
 }
 ```
+
+### allowedCodeRules Reference
+
+Rules defined by `@xrift/code-security` analyzer. When a world requires relaxation of these rules, they appear in `permissions.allowedCodeRules`.
+
+#### Dynamic Code Execution
+| Rule | Description |
+|------|-------------|
+| `no-eval` | Allows `eval()` to execute strings as code |
+| `no-new-function` | Allows `Function` constructor to dynamically generate code |
+| `no-string-timeout` | Allows `setTimeout`/`setInterval` with string arguments |
+| `no-javascript-blob` | Allows creating JavaScript Blobs for dynamic script execution |
+
+#### Obfuscation
+| Rule | Description |
+|------|-------------|
+| `no-obfuscation` | Allows obfuscated code patterns |
+
+#### Network
+| Rule | Description |
+|------|-------------|
+| `no-network-without-permission` | Allows network requests (fetch, WebSocket, etc.) |
+| `no-unauthorized-domain` | Allows connections to domains not in `allowedDomains` |
+| `no-rtc-connection` | Allows WebRTC peer connections |
+| `no-external-import` | Allows importing JavaScript modules from external URLs |
+
+#### Storage & Data
+| Rule | Description |
+|------|-------------|
+| `no-storage-access` | Allows localStorage/sessionStorage access |
+| `no-cookie-access` | Allows cookie read/write |
+| `no-indexeddb-access` | Allows IndexedDB access |
+| `no-storage-event` | Allows listening to storage events from other tabs |
+
+#### DOM
+| Rule | Description |
+|------|-------------|
+| `no-dangerous-dom` | Allows innerHTML and script element injection |
+
+#### Browser APIs
+| Rule | Description |
+|------|-------------|
+| `no-navigator-access` | Allows access to geolocation, camera, microphone, clipboard, etc. |
+
+#### Global Pollution
+| Rule | Description |
+|------|-------------|
+| `no-sensitive-api-override` | Allows overriding security-critical APIs (fetch, etc.) |
+| `no-global-override` | Allows overriding global objects (window, document, etc.) |
+| `no-prototype-pollution` | Allows modifying built-in object prototypes |
 
 ## InstanceContextValue
 
