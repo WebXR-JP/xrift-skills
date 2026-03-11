@@ -78,6 +78,49 @@ xrift-world-template/
 - **Low gravity world**: `"gravity": 1.62` (Moon gravity) for floaty movement
 - **High gravity world**: `"gravity": 24.79` (Jupiter gravity) for heavy movement
 
+### permissions (Permission Settings)
+
+Declares permissions required by the world. Declared permissions are shown to users as an approval screen when entering an instance.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `allowedDomains` | string[] | External domains the world communicates with |
+| `allowedCodeRules` | string[] | Code security rules to relax |
+
+```json
+{
+  "permissions": {
+    "allowedDomains": ["api.example.com", "cdn.example.com"],
+    "allowedCodeRules": ["no-storage-access", "no-network-without-permission"]
+  }
+}
+```
+
+#### allowedCodeRules
+
+Rules defined by `@xrift/code-security` analyzer. By default, unsafe operations are blocked but can be relaxed when required.
+
+| Category | Rule | Description |
+|----------|------|-------------|
+| Dynamic Code | `no-eval` | Allows `eval()` |
+| Dynamic Code | `no-new-function` | Allows `Function` constructor |
+| Dynamic Code | `no-string-timeout` | Allows `setTimeout`/`setInterval` with string args |
+| Dynamic Code | `no-javascript-blob` | Allows JavaScript Blob creation |
+| Obfuscation | `no-obfuscation` | Allows obfuscated code patterns |
+| Network | `no-network-without-permission` | Allows fetch, WebSocket, etc. |
+| Network | `no-unauthorized-domain` | Allows connections outside `allowedDomains` |
+| Network | `no-rtc-connection` | Allows WebRTC peer connections |
+| Network | `no-external-import` | Allows external JS module imports |
+| Storage | `no-storage-access` | Allows localStorage/sessionStorage |
+| Storage | `no-cookie-access` | Allows cookie read/write |
+| Storage | `no-indexeddb-access` | Allows IndexedDB access |
+| Storage | `no-storage-event` | Allows storage event listening |
+| DOM | `no-dangerous-dom` | Allows innerHTML and script injection |
+| Browser API | `no-navigator-access` | Allows geolocation, camera, mic, clipboard |
+| Global | `no-sensitive-api-override` | Allows overriding fetch, etc. |
+| Global | `no-global-override` | Allows overriding window, document |
+| Global | `no-prototype-pollution` | Allows prototype modification |
+
 ## Command Reference
 
 ```bash
