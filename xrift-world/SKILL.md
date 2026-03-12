@@ -131,8 +131,8 @@ npm run typecheck  # Type checking
 
 # XRift CLI
 xrift login        # Authenticate
-xrift create       # Create new project
-xrift upload world # Upload world
+xrift create world # Create new world project
+xrift upload       # Upload (auto-detect from xrift.json)
 xrift whoami       # Check logged-in user
 xrift logout       # Log out
 ```
