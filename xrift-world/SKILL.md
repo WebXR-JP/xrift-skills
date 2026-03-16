@@ -78,6 +78,26 @@ xrift-world-template/
 - **Low gravity world**: `"gravity": 1.62` (Moon gravity) for floaty movement
 - **High gravity world**: `"gravity": 24.79` (Jupiter gravity) for heavy movement
 
+### camera (Camera Settings)
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `near` | number | Near clip distance (hides objects closer than this distance) |
+| `far` | number | Far clip distance (hides objects farther than this distance) |
+
+```json
+{
+  "camera": {
+    "near": 0.1,
+    "far": 1000
+  }
+}
+```
+
+**Examples**:
+- **Vast world**: `"far": 5000` to render distant objects
+- **Precise world**: `"near": 0.01` for higher near-range rendering precision
+
 ### permissions (Permission Settings)
 
 Declares permissions required by the world. Declared permissions are shown to users as an approval screen when entering an instance.
