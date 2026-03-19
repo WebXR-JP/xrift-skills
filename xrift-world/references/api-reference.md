@@ -224,6 +224,27 @@ const { info } = useWorld('target-world-id')
 // info?.thumbnailUrl — thumbnail URL
 ```
 
+### useVoiceVolumeOverride()
+
+Hook for overriding specific user's voice chat volume. Used for stages or podiums.
+
+> Renamed from `useAudioVolume` in v0.34.0. Old name still works but is deprecated.
+
+**Returns**:
+| Property | Type | Description |
+|----------|------|-------------|
+| `setOverride` | `(userId: string, volume: number) => void` | Set volume override |
+| `clearOverride` | `(userId: string) => void` | Clear override |
+| `clearAll` | `() => void` | Clear all overrides |
+| `getOverrides` | `() => ReadonlyMap<string, number>` | Get current overrides |
+
+```typescript
+import { useVoiceVolumeOverride } from '@xrift/world-components'
+
+const { setOverride, clearOverride } = useVoiceVolumeOverride()
+setOverride(speakerUserId, 1.0)
+```
+
 ---
 
 ## Components
@@ -236,9 +257,10 @@ A clickable interactive object. Automatically sets `LAYERS.INTERACTABLE` on chil
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | `id` | `string` | Yes | Unique identifier |
-| `onInteract` | `() => void` | Yes | Callback when clicked |
+| `onInteract` | `(id: string) => void` | Yes | Callback when clicked (receives the object ID) |
 | `interactionText` | `string` | No | Text displayed on hover |
 | `enabled` | `boolean` | No | Enable/disable interaction |
+| `type` | `'button'` | No | Object type |
 
 ```typescript
 import { Interactable } from '@xrift/world-components'
@@ -281,8 +303,9 @@ Reflective surface component.
 | `position` | `[number, number, number]` | No | Position |
 | `rotation` | `[number, number, number]` | No | Rotation |
 | `size` | `[number, number]` | No | Size |
-| `color` | `string` | No | Color |
+| `color` | `number` | No | Reflection color (default: 0xcccccc) |
 | `textureResolution` | `number` | No | Texture resolution |
+| `lodDistance` | `number` | No | Distance in meters to switch to envMap-based pseudo-mirror (default: 10) |
 
 ```typescript
 import { Mirror } from '@xrift/world-components'
@@ -298,13 +321,13 @@ Video player component with UI controls (play/pause, progress bar, volume, URL i
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | `id` | `string` | Yes | Unique identifier |
-| `url` | `string` | Yes | Video URL |
+| `url` | `string` | No | Video URL |
 | `position` | `[number, number, number]` | No | Position |
 | `rotation` | `[number, number, number]` | No | Rotation |
 | `width` | `number` | No | Width |
 | `playing` | `boolean` | No | Playing state |
 | `volume` | `number` | No | Volume |
-| `sync` | `boolean` | No | Sync playback across users |
+| `sync` | `'global' \| 'local'` | No | Sync mode (default: 'global') |
 
 ```typescript
 import { VideoPlayer } from '@xrift/world-components'
@@ -327,6 +350,7 @@ A portal component for navigating to another instance. Displays the target insta
 | `instanceId` | `string` | Yes | Target instance ID |
 | `position` | `[number, number, number]` | No | Position (default: `[0, 0, 0]`) |
 | `rotation` | `[number, number, number]` | No | Rotation (default: `[0, 0, 0]`) |
+| `disabled` | `boolean` | No | Disable portal navigation (default: false) |
 
 ```typescript
 import { Portal } from '@xrift/world-components'
@@ -367,11 +391,197 @@ Screen share display component.
 | `position` | `[number, number, number]` | No | Position |
 | `rotation` | `[number, number, number]` | No | Rotation |
 | `width` | `number` | No | Width |
+| `targetFps` | `number` | No | Texture update FPS limit for low-spec devices (default: unlimited) |
 
 ```typescript
 import { ScreenShareDisplay } from '@xrift/world-components'
 
 <ScreenShareDisplay id="screen-share" position={[0, 2, -3]} width={4} />
+```
+
+### Skybox
+
+Gradient sky background.
+
+**Props**:
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `topColor` | `number` | No | Top color (default: 0x87ceeb) |
+| `bottomColor` | `number` | No | Bottom color (default: 0xffffff) |
+| `offset` | `number` | No | Gradient start position (default: 0) |
+| `exponent` | `number` | No | Gradient range (default: 1) |
+
+```typescript
+import { Skybox } from '@xrift/world-components'
+
+<Skybox topColor={0x87ceeb} bottomColor={0xffffff} />
+```
+
+### VideoScreen
+
+Low-level video screen without UI controls. Use `VideoPlayer` for a full-featured player.
+
+**Props**:
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `id` | `string` | Yes | Unique screen ID |
+| `position` | `[number, number, number]` | No | Position |
+| `rotation` | `[number, number, number]` | No | Rotation |
+| `scale` | `[number, number]` | No | Size [width, height] |
+| `url` | `string` | No | Video URL |
+| `playing` | `boolean` | No | Playing state (default: true) |
+| `currentTime` | `number` | No | Playback position in seconds |
+| `sync` | `'global' \| 'local'` | No | Sync mode (default: 'global') |
+| `muted` | `boolean` | No | Muted state (default: false) |
+| `volume` | `number` | No | Volume 0-1 (default: 1) |
+
+```typescript
+import { VideoScreen } from '@xrift/world-components'
+
+<VideoScreen id="bg-video" url="https://example.com/video.mp4" scale={[4, 2.25]} />
+```
+
+### LiveVideoPlayer
+
+HLS live stream video player with controls. Height is auto-calculated at 16:9 ratio.
+
+**Props**:
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `id` | `string` | Yes | Unique identifier |
+| `position` | `[number, number, number]` | No | Position |
+| `rotation` | `[number, number, number]` | No | Rotation |
+| `width` | `number` | No | Screen width (default: 4) |
+| `url` | `string` | No | HLS stream URL (.m3u8) |
+| `playing` | `boolean` | No | Initial playing state (default: false) |
+| `volume` | `number` | No | Initial volume 0-1 (default: 1) |
+| `sync` | `'global' \| 'local'` | No | Sync mode (default: 'global') |
+
+```typescript
+import { LiveVideoPlayer } from '@xrift/world-components'
+
+<LiveVideoPlayer id="live-stream" url="https://example.com/live/stream.m3u8" position={[0, 2, -5]} width={6} />
+```
+
+### TextInput
+
+3D text input component. Wraps child objects to make them trigger a text input prompt.
+
+**Props**:
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `id` | `string` | Yes | Unique input ID |
+| `children` | `ReactNode` | Yes | 3D objects (trigger area) |
+| `placeholder` | `string` | No | Placeholder text |
+| `maxLength` | `number` | No | Maximum character count |
+| `value` | `string` | No | Controlled value |
+| `onSubmit` | `(value: string) => void` | No | Submit callback |
+| `interactionText` | `string` | No | Text displayed on hover |
+| `disabled` | `boolean` | No | Disable input |
+
+```typescript
+import { TextInput } from '@xrift/world-components'
+
+<TextInput id="name-input" placeholder="Enter your name" onSubmit={setName}>
+  <mesh><planeGeometry args={[2, 0.5]} /><meshStandardMaterial color="white" /></mesh>
+</TextInput>
+```
+
+### TagBoard
+
+Tag selection board where users can select tags displayed above their avatar.
+
+**Props**:
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `instanceStateKey` | `string` | Yes | Instance state key for multi-board identification |
+| `tags` | `Tag[]` | No | Tag definitions (uses defaults if omitted) |
+| `columns` | `number` | No | Display columns (default: 3) |
+| `title` | `string` | No | Board title |
+| `position` | `[number, number, number]` | No | Position |
+| `rotation` | `[number, number, number]` | No | Rotation |
+| `scale` | `number` | No | Overall scale |
+
+```typescript
+import { TagBoard } from '@xrift/world-components'
+
+<TagBoard instanceStateKey="role-tags" position={[0, 1.5, -3]} />
+```
+
+### Video180Sphere
+
+180-degree VR video player rendered on a hemisphere.
+
+**Props**:
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `url` | `string` | Yes | 180-degree video URL |
+| `position` | `[number, number, number]` | No | Position |
+| `rotation` | `[number, number, number]` | No | Rotation |
+| `scale` | `number \| [number, number, number]` | No | Scale |
+| `playing` | `boolean` | No | Playing state (default: true) |
+| `muted` | `boolean` | No | Muted state |
+| `volume` | `number` | No | Volume 0-1 (default: 1) |
+| `radius` | `number` | No | Hemisphere radius |
+| `segments` | `number` | No | Geometry resolution |
+| `loop` | `boolean` | No | Loop playback |
+| `placeholderColor` | `string` | No | Pre-load placeholder color |
+| `onEnded` | `() => void` | No | Playback ended callback |
+| `onLoadedMetadata` | `(event: { duration: number }) => void` | No | Metadata loaded callback |
+| `onProgress` | `(event: { currentTime: number }) => void` | No | Progress update callback |
+
+```typescript
+import { Video180Sphere } from '@xrift/world-components'
+
+<Video180Sphere url="https://example.com/vr-180.mp4" radius={5} loop />
+```
+
+### DevEnvironment
+
+Development environment wrapper. Provides physics, camera, crosshair, and first-person navigation. Not needed in production.
+
+**Props**:
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `children` | `ReactNode` | Yes | World content |
+| `camera` | `CameraConfig` | No | Camera settings |
+| `moveSpeed` | `number` | No | Movement speed (default: 5.0) |
+| `shadows` | `boolean` | No | Enable shadows (default: true) |
+| `spawnPosition` | `[number, number, number]` | No | Spawn position (default: [0.11, 1.6, 7.59]) |
+| `respawnThreshold` | `number` | No | Respawn height threshold (default: -10) |
+| `physicsConfig` | `PhysicsConfig` | No | Physics settings |
+
+```typescript
+import { DevEnvironment } from '@xrift/world-components'
+
+<DevEnvironment physicsConfig={{ gravity: 9.81, allowInfiniteJump: false }}>
+  <World />
+</DevEnvironment>
+```
+
+### EntryLogBoard
+
+Displays a log of user join/leave events.
+
+**Props**:
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `stateNamespace` | `string` | No | Instance state key for multi-board identification |
+| `maxEntries` | `number` | No | Maximum display entries |
+| `formatTimestamp` | `(date: Date) => string` | No | Timestamp format function |
+| `displayNameFallback` | `string` | No | Fallback when display name unavailable |
+| `labels` | `Partial<Labels>` | No | Customize join/leave labels |
+| `colors` | `Partial<Colors>` | No | Customize colors |
+| `position` | `[number, number, number]` | No | Position |
+| `rotation` | `[number, number, number]` | No | Rotation |
+| `scale` | `number` | No | Overall scale |
+| `onJoin` | `(entry: LogEntry) => void` | No | Join event callback |
+| `onLeave` | `(entry: LogEntry) => void` | No | Leave event callback |
+
+```typescript
+import { EntryLogBoard } from '@xrift/world-components'
+
+<EntryLogBoard position={[3, 1.5, -2]} maxEntries={10} />
 ```
 
 ---

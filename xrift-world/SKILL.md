@@ -11,7 +11,7 @@ A guide for creating and modifying WebXR worlds for the XRift platform.
 
 - [API Reference](references/api-reference.md) - Full specification of all hooks, components, and constants in `@xrift/world-components`
 - [Code Templates](references/code-templates.md) - Implementation patterns for GLB models, textures, Skybox, interactions, and more
-- [Type Definitions](references/type-definitions.md) - Type definitions for User, PlayerMovement, VRTrackingData, TeleportDestination
+- [Type Definitions](references/type-definitions.md) - Type definitions for User, PlayerMovement, VRTrackingData, TeleportDestination, WorldInfo, InstanceInfo, ConfirmOptions, Tag, VideoState, LogEntry, PhysicsConfig, CameraConfig, VoiceVolumeOverrideContextValue
 
 ## Critical Rules (Must Follow)
 
