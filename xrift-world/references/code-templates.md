@@ -320,6 +320,48 @@ const rotation = getBillboardYRotation(cameraWorldPos, targetWorldPos)
 dummy.rotation.y = rotation
 ```
 
+## Audio Volume Override (Stage/Podium)
+
+Override specific user's audio volume for stages or podiums.
+
+```typescript
+import { useCallback } from 'react'
+import { useVoiceVolumeOverride } from '@xrift/world-components'
+import { RigidBody } from '@react-three/rapier'
+
+export const StagePodium = () => {
+  const { setOverride, clearOverride } = useVoiceVolumeOverride()
+
+  const handleEnter = useCallback(
+    (userId: string) => {
+      setOverride(userId, 1.0) // Amplify speaker's voice to all
+    },
+    [setOverride],
+  )
+
+  const handleLeave = useCallback(
+    (userId: string) => {
+      clearOverride(userId)
+    },
+    [clearOverride],
+  )
+
+  return (
+    <RigidBody
+      type="fixed"
+      sensor
+      onIntersectionEnter={() => handleEnter('local-user')}
+      onIntersectionExit={() => handleLeave('local-user')}
+    >
+      <mesh>
+        <cylinderGeometry args={[1, 1, 0.2, 32]} />
+        <meshStandardMaterial color="gold" />
+      </mesh>
+    </RigidBody>
+  )
+}
+```
+
 ## Instance Event (Reaction)
 
 Send and receive custom events across all users in the instance.

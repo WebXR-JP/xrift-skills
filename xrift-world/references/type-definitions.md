@@ -81,6 +81,7 @@ interface PortalProps {
   instanceId: string
   position?: [number, number, number]  // Default: [0, 0, 0]
   rotation?: [number, number, number]  // Default: [0, 0, 0]
+  disabled?: boolean                   // Default: false
 }
 ```
 
@@ -162,5 +163,118 @@ Represents a teleport destination. Passed to `teleport()` from `useTeleport()`.
 interface TeleportDestination {
   position: [number, number, number]
   yaw?: number  // Degrees (0-360). If omitted, the player's current facing direction is preserved.
+}
+```
+
+## Tag
+
+Tag definition for `TagBoard`.
+
+```typescript
+interface Tag {
+  id: string
+  label: string
+  color: string
+}
+```
+
+## VideoState
+
+Video screen synchronized state (used internally by `VideoScreen`).
+
+```typescript
+interface VideoState {
+  url: string
+  isPlaying: boolean
+  currentTime: number
+  serverTime: number
+}
+```
+
+## LogEntry
+
+Entry log record for `EntryLogBoard`.
+
+```typescript
+type LogType = 'join' | 'leave'
+
+interface LogEntry {
+  id: string
+  type: LogType
+  userId: string
+  displayName: string
+  avatarUrl: string | null
+  timestamp: string  // Formatted timestamp
+}
+```
+
+## Labels / Colors (EntryLogBoard)
+
+```typescript
+interface Labels {
+  join: string
+  leave: string
+}
+
+interface Colors {
+  join: string
+  leave: string
+  background: string
+  text: string
+}
+```
+
+## PhysicsConfig
+
+Physics settings for `DevEnvironment`.
+
+```typescript
+interface PhysicsConfig {
+  gravity?: number             // Default: 9.81
+  allowInfiniteJump?: boolean  // Default: true
+}
+```
+
+## CameraConfig
+
+Camera settings for `DevEnvironment`.
+
+```typescript
+interface CameraConfig {
+  near?: number  // Default: 0.01
+  far?: number   // Default: 1000
+}
+```
+
+## VoiceVolumeOverrideContextValue
+
+Context value for voice volume override functionality.
+
+> Renamed from `AudioVolumeContextValue` in v0.34.0. Old name still works but is deprecated.
+
+```typescript
+interface VoiceVolumeOverrideContextValue {
+  setOverride: (userId: string, volume: number) => void
+  clearOverride: (userId: string) => void
+  clearAll: () => void
+  getOverrides: () => ReadonlyMap<string, number>
+}
+```
+
+## Position3D / Rotation3D
+
+Basic 3D coordinate types.
+
+```typescript
+interface Position3D {
+  x: number
+  y: number
+  z: number
+}
+
+interface Rotation3D {
+  x: number
+  y: number
+  z: number
 }
 ```
