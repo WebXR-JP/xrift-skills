@@ -245,6 +245,31 @@ const { setOverride, clearOverride } = useVoiceVolumeOverride()
 setOverride(speakerUserId, 1.0)
 ```
 
+### useDefaultFont(locales)
+
+Hook for loading multilingual MSDF fonts for UIKit (`@pmndrs/uikit`). Fonts are also registered globally via `setGlobalProperties` on load, so `fontFamily="ja"` works without explicitly passing `fontFamilies` to `Container`.
+
+**Parameters**:
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `locales` | `FontLocale[]` | Array of font locales to load |
+
+**Returns**: `FontFamilies | undefined` — Returns `FontFamilies` once loaded, `undefined` while loading.
+
+`FontLocale`: `'ja'`
+
+```typescript
+import { useDefaultFont } from '@xrift/world-components'
+import type { FontLocale } from '@xrift/world-components'
+
+const FONT_LOCALES: FontLocale[] = ['ja']
+const fontFamilies = useDefaultFont(FONT_LOCALES)
+
+<Container fontFamilies={fontFamilies}>
+  <Text fontFamily="ja">こんにちは</Text>
+</Container>
+```
+
 ---
 
 ## Components
