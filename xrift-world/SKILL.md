@@ -215,9 +215,28 @@ Run `npm run dev` to start the dev server. You can navigate and test the world i
 - `three/addons` バレルを shared にすると Lottie 由来の `eval` がバンドルに含まれるため、**サブパス単位**で shared にしている
 - ワールド側でも `three/addons/loaders/DRACOLoader.js` のようにサブパスで import & shared 宣言する
 
-```js
-// vite.config.ts (ワールド側)
-'three/addons/loaders/DRACOLoader.js': { singleton: true },
+```ts
+// vite.config.ts — shared の設定例（xrift-world-template 準拠）
+federation({
+  name: 'xrift_world_template',
+  filename: 'remoteEntry.js',
+  exposes: {
+    './World': './src/index.tsx',
+  },
+  shared: {
+    react: { singleton: true, requiredVersion: '^19.0.0' },
+    'react-dom': { singleton: true, requiredVersion: '^19.0.0' },
+    'react-dom/client': { singleton: true },
+    'react/jsx-runtime': { singleton: true },
+    three: { singleton: true, requiredVersion: '^0.176.0' },
+    // three/addons はバレルではなくサブパス単位で宣言する
+    'three/addons/loaders/DRACOLoader.js': { singleton: true },
+    '@react-three/fiber': { singleton: true, requiredVersion: '^9.3.0' },
+    '@react-three/rapier': { singleton: true, requiredVersion: '^2.1.0' },
+    '@react-three/drei': { singleton: true, requiredVersion: '^10.7.3' },
+    '@xrift/world-components': { singleton: true, requiredVersion: '^0.1.0' },
+  },
+}),
 ```
 
 ## Troubleshooting
