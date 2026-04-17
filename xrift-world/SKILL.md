@@ -189,6 +189,37 @@ Run `npm run dev` to start the dev server. You can navigate and test the world i
 ### XRift-specific
 - `@xrift/world-components` - XRift hooks and components
 
+### Module Federation Shared パッケージ
+
+ホスト（xrift.net）と shared で共有されるパッケージ。ワールドの `vite.config.ts` で shared に宣言すれば、ワールドチャンクにバンドルされずホストから提供される。
+
+| パッケージ | バージョン要件 |
+|-----------|------------|
+| `react` | ^19.0.0 |
+| `react-dom` | ^19.0.0 |
+| `react-dom/client` | - |
+| `react/jsx-runtime` | ^19.0.0 |
+| `three` | ^0.176.0 |
+| `three/addons/loaders/GLTFLoader.js` | - |
+| `three/addons/loaders/DRACOLoader.js` | - |
+| `three/addons/loaders/KTX2Loader.js` | - |
+| `@react-three/fiber` | ^9.0.0 |
+| `@react-three/rapier` | ^2.0.0 |
+| `@react-three/drei` | ^10.0.0 |
+| `@react-three/uikit` | ^1.0.0 |
+| `@pmndrs/uikit` | ^1.0.0 |
+| `@xrift/world-components` | ^0.1.0 |
+
+### three/addons の注意
+
+- `three/addons` バレルを shared にすると Lottie 由来の `eval` がバンドルに含まれるため、**サブパス単位**で shared にしている
+- ワールド側でも `three/addons/loaders/DRACOLoader.js` のようにサブパスで import & shared 宣言する
+
+```js
+// vite.config.ts (ワールド側)
+'three/addons/loaders/DRACOLoader.js': { singleton: true },
+```
+
 ## Troubleshooting
 
 ### "useXRift must be used within XRiftProvider"
