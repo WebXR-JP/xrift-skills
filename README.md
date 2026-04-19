@@ -7,9 +7,19 @@ AI コーディングエージェント（Claude Code, Cursor, Copilot, Codex �
 
 ## インストール
 
-**注意:** インストール方法はプラットフォームごとに異なります。
+### 最短導入（推奨）
 
-### Claude Code
+全プラットフォーム共通。スキルだけをシンプルに入れたい場合はこちら：
+
+```bash
+npx skills add WebXR-JP/xrift-skills
+```
+
+### プラグイン経由で導入（マーケットプレイス / slash command 対応）
+
+各プラットフォームの plugin システム経由で導入すると、マーケットプレイス統合や slash command、自動更新などが使えます。
+
+#### Claude Code
 
 マーケットプレイスを登録：
 
@@ -23,17 +33,27 @@ AI コーディングエージェント（Claude Code, Cursor, Copilot, Codex �
 /plugin install xrift-skills@xrift-marketplace
 ```
 
-### OpenAI Codex
+#### OpenAI Codex
 
-Codex はネイティブの skill 探索機能を使用します。手順：
+Codex のマーケットプレイスに登録（Codex CLI 0.121 以降）：
 
-[`.codex/INSTALL.md`](.codex/INSTALL.md)
+```bash
+codex marketplace add https://github.com/WebXR-JP/xrift-skills
+```
 
-### Cursor
+Codex セッションで `/plugins` を実行し、一覧から `xrift-skills` を選んで `Install Plugin`。
 
-Cursor の plugin マーケットプレイス、またはプラグイン設定から `.cursor-plugin/plugin.json` を読み込んでください。
+旧バージョン向けの手動導入は [`.codex/INSTALL.md`](.codex/INSTALL.md) を参照。
 
-### OpenCode
+#### Cursor
+
+Cursor Agent チャットで以下を実行（Cursor 2.5 以降）：
+
+```
+/add-plugin xrift-skills@https://github.com/WebXR-JP/xrift-skills
+```
+
+#### OpenCode
 
 OpenCode に以下のように指示：
 
@@ -43,14 +63,14 @@ Fetch and follow instructions from https://raw.githubusercontent.com/WebXR-JP/xr
 
 詳細手順：[`.opencode/INSTALL.md`](.opencode/INSTALL.md)
 
-### GitHub Copilot CLI
+#### GitHub Copilot CLI
 
 ```bash
 copilot plugin marketplace add WebXR-JP/xrift-skills
 copilot plugin install xrift-skills@xrift-marketplace
 ```
 
-### Gemini CLI
+#### Gemini CLI
 
 ```bash
 gemini extensions install https://github.com/WebXR-JP/xrift-skills
@@ -69,13 +89,19 @@ XRift プラットフォーム用 WebXR ワールド制作ガイド。
 
 ## 更新
 
-Claude Code:
+最短導入の場合:
+
+```bash
+npx skills update
+```
+
+Claude Code（plugin 経由）:
 
 ```
 /plugin marketplace update xrift-marketplace
 ```
 
-Gemini CLI:
+Gemini CLI（plugin 経由）:
 
 ```bash
 gemini extensions update xrift-skills

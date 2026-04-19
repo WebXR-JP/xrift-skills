@@ -7,9 +7,19 @@ Provides essential information for AI coding agents (Claude Code, Cursor, Copilo
 
 ## Installation
 
-**Note:** Installation differs by platform.
+### Quick install (recommended)
 
-### Claude Code
+Cross-platform one-liner for installing just the skills:
+
+```bash
+npx skills add WebXR-JP/xrift-skills
+```
+
+### Plugin install (marketplace / slash command support)
+
+For marketplace integration, slash commands, and auto-updates, install via each platform's plugin system:
+
+#### Claude Code
 
 Register the marketplace:
 
@@ -23,17 +33,27 @@ Install the plugin:
 /plugin install xrift-skills@xrift-marketplace
 ```
 
-### OpenAI Codex
+#### OpenAI Codex
 
-Codex uses native skill discovery. Follow:
+Add this marketplace (Codex CLI 0.121+):
 
-[`.codex/INSTALL.md`](.codex/INSTALL.md)
+```bash
+codex marketplace add https://github.com/WebXR-JP/xrift-skills
+```
 
-### Cursor
+Then run `/plugins` in a Codex session and select `xrift-skills` → `Install Plugin`.
 
-Load `.cursor-plugin/plugin.json` via Cursor's plugin marketplace or plugin settings.
+Manual install for older Codex versions: [`.codex/INSTALL.md`](.codex/INSTALL.md).
 
-### OpenCode
+#### Cursor
+
+In Cursor Agent chat, run (Cursor 2.5+):
+
+```
+/add-plugin xrift-skills@https://github.com/WebXR-JP/xrift-skills
+```
+
+#### OpenCode
 
 Tell OpenCode:
 
@@ -43,14 +63,14 @@ Fetch and follow instructions from https://raw.githubusercontent.com/WebXR-JP/xr
 
 Detailed instructions: [`.opencode/INSTALL.md`](.opencode/INSTALL.md)
 
-### GitHub Copilot CLI
+#### GitHub Copilot CLI
 
 ```bash
 copilot plugin marketplace add WebXR-JP/xrift-skills
 copilot plugin install xrift-skills@xrift-marketplace
 ```
 
-### Gemini CLI
+#### Gemini CLI
 
 ```bash
 gemini extensions install https://github.com/WebXR-JP/xrift-skills
@@ -69,13 +89,19 @@ A guide for building WebXR worlds on the XRift platform.
 
 ## Updating
 
-Claude Code:
+Quick install:
+
+```bash
+npx skills update
+```
+
+Claude Code (plugin):
 
 ```
 /plugin marketplace update xrift-marketplace
 ```
 
-Gemini CLI:
+Gemini CLI (plugin):
 
 ```bash
 gemini extensions update xrift-skills
