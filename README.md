@@ -7,8 +7,53 @@ AI コーディングエージェント（Claude Code, Cursor, Copilot, Codex �
 
 ## インストール
 
+**注意:** インストール方法はプラットフォームごとに異なります。
+
+### Claude Code
+
+マーケットプレイスを登録：
+
+```
+/plugin marketplace add WebXR-JP/xrift-skills
+```
+
+プラグインをインストール：
+
+```
+/plugin install xrift-skills@xrift-marketplace
+```
+
+### OpenAI Codex
+
+Codex はネイティブの skill 探索機能を使用します。手順：
+
+[`.codex/INSTALL.md`](.codex/INSTALL.md)
+
+### Cursor
+
+Cursor の plugin マーケットプレイス、またはプラグイン設定から `.cursor-plugin/plugin.json` を読み込んでください。
+
+### OpenCode
+
+OpenCode に以下のように指示：
+
+```
+Fetch and follow instructions from https://raw.githubusercontent.com/WebXR-JP/xrift-skills/main/.opencode/INSTALL.md
+```
+
+詳細手順：[`.opencode/INSTALL.md`](.opencode/INSTALL.md)
+
+### GitHub Copilot CLI
+
 ```bash
-npx skills add WebXR-JP/xrift-skills
+copilot plugin marketplace add WebXR-JP/xrift-skills
+copilot plugin install xrift-skills@xrift-marketplace
+```
+
+### Gemini CLI
+
+```bash
+gemini extensions install https://github.com/WebXR-JP/xrift-skills
 ```
 
 ## 含まれるスキル
@@ -24,10 +69,16 @@ XRift プラットフォーム用 WebXR ワールド制作ガイド。
 
 ## 更新
 
-インストール済みのスキルを最新版に更新するには：
+Claude Code:
+
+```
+/plugin marketplace update xrift-marketplace
+```
+
+Gemini CLI:
 
 ```bash
-npx skills update
+gemini extensions update xrift-skills
 ```
 
 ## 関連リンク

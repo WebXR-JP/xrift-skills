@@ -1,0 +1,14 @@
+{
+  "name": "xrift-skills",
+  "displayName": "XRift Skills",
+  "description": "XRift WebXR world creation skills for AI coding agents (Claude Code, Cursor, Codex, etc.)",
+  "version": "0.1.0",
+  "author": {
+    "name": "WebXR-JP",
+    "email": "sawadasuiren@gmail.com"
+  },
+  "homepage": "https://github.com/WebXR-JP/xrift-skills",
+  "repository": "https://github.com/WebXR-JP/xrift-skills",
+  "keywords": ["webxr", "xrift", "react-three-fiber", "skills"],
+  "skills": "./skills/"
+}

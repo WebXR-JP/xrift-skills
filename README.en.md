@@ -7,8 +7,53 @@ Provides essential information for AI coding agents (Claude Code, Cursor, Copilo
 
 ## Installation
 
+**Note:** Installation differs by platform.
+
+### Claude Code
+
+Register the marketplace:
+
+```
+/plugin marketplace add WebXR-JP/xrift-skills
+```
+
+Install the plugin:
+
+```
+/plugin install xrift-skills@xrift-marketplace
+```
+
+### OpenAI Codex
+
+Codex uses native skill discovery. Follow:
+
+[`.codex/INSTALL.md`](.codex/INSTALL.md)
+
+### Cursor
+
+Load `.cursor-plugin/plugin.json` via Cursor's plugin marketplace or plugin settings.
+
+### OpenCode
+
+Tell OpenCode:
+
+```
+Fetch and follow instructions from https://raw.githubusercontent.com/WebXR-JP/xrift-skills/main/.opencode/INSTALL.md
+```
+
+Detailed instructions: [`.opencode/INSTALL.md`](.opencode/INSTALL.md)
+
+### GitHub Copilot CLI
+
 ```bash
-npx skills add WebXR-JP/xrift-skills
+copilot plugin marketplace add WebXR-JP/xrift-skills
+copilot plugin install xrift-skills@xrift-marketplace
+```
+
+### Gemini CLI
+
+```bash
+gemini extensions install https://github.com/WebXR-JP/xrift-skills
 ```
 
 ## Included Skills
@@ -24,10 +69,16 @@ A guide for building WebXR worlds on the XRift platform.
 
 ## Updating
 
-To update installed skills to the latest version:
+Claude Code:
+
+```
+/plugin marketplace update xrift-marketplace
+```
+
+Gemini CLI:
 
 ```bash
-npx skills update
+gemini extensions update xrift-skills
 ```
 
 ## Links

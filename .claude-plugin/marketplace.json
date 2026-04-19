@@ -1,0 +1,23 @@
+{
+  "name": "xrift-marketplace",
+  "owner": {
+    "name": "WebXR-JP",
+    "email": "sawadasuiren@gmail.com"
+  },
+  "metadata": {
+    "description": "WebXR-JP marketplace hosting XRift world creation skills for AI coding agents.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "xrift-skills",
+      "description": "XRift WebXR world creation skills for AI coding agents (Claude Code, Cursor, Codex, etc.)",
+      "version": "0.1.0",
+      "source": "./",
+      "author": {
+        "name": "WebXR-JP",
+        "email": "sawadasuiren@gmail.com"
+      }
+    }
+  ]
+}
