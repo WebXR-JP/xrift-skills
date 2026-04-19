@@ -98,6 +98,22 @@ xrift-world-template/
 - **Vast world**: `"far": 5000` to render distant objects
 - **Precise world**: `"near": 0.01` for higher near-range rendering precision
 
+### outputBufferType (Output Buffer Type)
+
+Specifies the output buffer type for WebGLRenderer. Affects post-processing and HDR rendering precision.
+
+| Value | Description |
+|-------|-------------|
+| `UnsignedByteType` | 8-bit integer (default, standard rendering) |
+| `HalfFloatType` | 16-bit float (HDR and post-processing) |
+| `FloatType` | 32-bit float (highest precision, higher GPU cost) |
+
+```json
+{
+  "outputBufferType": "HalfFloatType"
+}
+```
+
 ### permissions (Permission Settings)
 
 Declares permissions required by the world. Declared permissions are shown to users as an approval screen when entering an instance.
