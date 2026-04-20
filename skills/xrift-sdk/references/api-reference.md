@@ -60,67 +60,6 @@ Integrated upload flow: create → hash → get URLs → upload → complete.
 | `contentHash` | `string` | Content hash (12-char hex) |
 | `files` | `UploadFile[]` | Uploaded files |
 
-### `create(): Promise<CreateWorldResponse>`
-
-Creates a new world resource.
-
-**Returns:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `string` | World ID |
-| `ownerId` | `string` | Owner user ID |
-| `createdAt` | `string` | ISO date string |
-| `updatedAt` | `string` | ISO date string |
-
-### `getUploadUrls(worldId: string, request: WorldUploadUrlsRequest): Promise<WorldUploadUrlsResponse>`
-
-Gets signed upload URLs for files.
-
-**WorldUploadUrlsRequest:**
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | `string` | Yes | World name |
-| `description` | `string` | No | Description |
-| `thumbnailPath` | `string` | No | Thumbnail path |
-| `physics` | `PhysicsConfig` | No | Physics config |
-| `camera` | `CameraConfig` | No | Camera config |
-| `permissions` | `WorldPermissions` | No | Permissions |
-| `outputBufferType` | `OutputBufferType` | No | Buffer type |
-| `contentHash` | `string` | Yes | Content hash |
-| `fileSize` | `number` | Yes | Total file size in bytes |
-| `files` | `Array<{path, contentType}>` | Yes | File metadata |
-
-**Returns: `WorldUploadUrlsResponse`**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `uploadUrls` | `SignedUrlResponse[]` | Signed URLs for each file |
-| `versionId` | `string` | Version ID |
-| `contentHash` | `string` | Content hash |
-| `versionNumber` | `number` | Version number |
-
-### `complete(worldId: string, versionId: string): Promise<CompleteWorldUploadResponse>`
-
-Notifies the server that all files have been uploaded.
-
-**Returns: `CompleteWorldUploadResponse`**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `versionId` | `string` | Version ID |
-| `worldId` | `string` | World ID |
-| `name` | `string` | World name |
-| `description` | `string` | Description |
-| `contentHash` | `string` | Content hash |
-| `fileSize` | `number` | Total file size |
-| `status` | `string` | Upload status |
-| `versionNumber` | `number` | Version number |
-| `owner` | `{id, displayName}` | Owner info |
-| `createdAt` | `string` | ISO date string |
-| `updatedAt` | `string` | ISO date string |
-
 ---
 
 ## ItemsApi
@@ -151,27 +90,6 @@ Integrated upload flow for items.
 | `versionNumber` | `number` | Version number |
 | `contentHash` | `string` | Content hash |
 | `files` | `UploadFile[]` | Uploaded files |
-
-### `create(): Promise<CreateItemResponse>`
-
-Creates a new item resource.
-
-**Returns:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `string` | Item ID |
-| `ownerId` | `string` | Owner user ID |
-| `createdAt` | `string` | ISO date string |
-| `updatedAt` | `string` | ISO date string |
-
-### `getUploadUrls(itemId: string, request: ItemUploadUrlsRequest): Promise<ItemUploadUrlsResponse>`
-
-Gets signed upload URLs for item files.
-
-### `complete(itemId: string, versionId: string): Promise<CompleteItemUploadResponse>`
-
-Notifies upload completion.
 
 ---
 

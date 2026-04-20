@@ -170,57 +170,6 @@ try {
 }
 ```
 
-## Node.js: Step-by-Step Upload (Advanced)
-
-```typescript
-import { XriftClient, calculateContentHash, getMimeType } from '@xrift/sdk';
-
-const client = new XriftClient({ token: process.env.XRIFT_TOKEN! });
-
-// Step 1: Create world
-const world = await client.worlds.create();
-console.log('Created world:', world.id);
-
-// Step 2: Prepare files
-const files = [
-  {
-    remotePath: 'scene.glb',
-    data: sceneData,
-    size: sceneData.byteLength,
-    contentType: getMimeType('scene.glb'),
-  },
-];
-
-// Step 3: Calculate hash
-const contentHash = await calculateContentHash(
-  files.map((f) => ({ remotePath: f.remotePath, data: f.data })),
-  { physics: { gravity: -9.8 } },
-);
-
-// Step 4: Get signed URLs
-const urlsResponse = await client.worlds.getUploadUrls(world.id, {
-  name: 'My World',
-  contentHash,
-  fileSize: files.reduce((sum, f) => sum + f.size, 0),
-  files: files.map((f) => ({
-    path: f.remotePath,
-    contentType: f.contentType,
-  })),
-});
-
-// Step 5: Upload each file to its signed URL
-for (let i = 0; i < files.length; i++) {
-  await fetch(urlsResponse.uploadUrls[i].uploadUrl, {
-    method: 'PUT',
-    headers: { 'Content-Type': files[i].contentType },
-    body: files[i].data,
-  });
-}
-
-// Step 6: Complete
-await client.worlds.complete(world.id, urlsResponse.versionId);
-```
-
 ## Browser: Upload from File Input
 
 ```typescript

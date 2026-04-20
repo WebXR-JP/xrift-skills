@@ -85,7 +85,7 @@ The `upload()` method (on both `WorldsApi` and `ItemsApi`) executes these steps 
 5. **Upload files** — PUT each file to its signed URL with correct Content-Type header
 6. **Complete upload** — POST to `/complete` endpoint with the version ID
 
-Each step can also be called individually for advanced use cases using `create()`, `getUploadUrls()`, and `complete()`.
+All these steps are handled internally by `upload()` and cannot be called individually.
 
 ## Error Handling
 

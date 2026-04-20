@@ -89,77 +89,6 @@ interface WorldPermissions {
 }
 ```
 
-### CreateWorldResponse
-
-```typescript
-interface CreateWorldResponse {
-  id: string;
-  ownerId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-```
-
-### WorldUploadUrlsRequest
-
-```typescript
-interface WorldUploadUrlsRequest {
-  name: string;
-  description?: string;
-  thumbnailPath?: string;
-  physics?: PhysicsConfig;
-  camera?: CameraConfig;
-  permissions?: WorldPermissions;
-  outputBufferType?: OutputBufferType;
-  contentHash: string;
-  fileSize: number;
-  files: Array<{
-    path: string;
-    contentType: string;
-  }>;
-}
-```
-
-### WorldUploadUrlsResponse
-
-```typescript
-interface WorldUploadUrlsResponse {
-  uploadUrls: SignedUrlResponse[];
-  versionId: string;
-  contentHash: string;
-  versionNumber: number;
-}
-```
-
-### CompleteWorldUploadRequest
-
-```typescript
-interface CompleteWorldUploadRequest {
-  versionId: string;
-}
-```
-
-### CompleteWorldUploadResponse
-
-```typescript
-interface CompleteWorldUploadResponse {
-  versionId: string;
-  worldId: string;
-  name: string;
-  description?: string;
-  contentHash: string;
-  fileSize: number;
-  status: string;
-  versionNumber: number;
-  owner: {
-    id: string;
-    displayName: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-```
-
 ### WorldUploadOptions
 
 ```typescript
@@ -198,70 +127,6 @@ interface WorldUploadResult {
 interface ItemPermissions {
   allowedDomains?: string[];
   allowedCodeRules?: string[];
-}
-```
-
-### CreateItemResponse
-
-```typescript
-interface CreateItemResponse {
-  id: string;
-  ownerId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-```
-
-### ItemUploadUrlsRequest
-
-```typescript
-interface ItemUploadUrlsRequest {
-  name: string;
-  description?: string;
-  thumbnailPath?: string;
-  contentHash: string;
-  fileSize: number;
-  files: Array<{
-    path: string;
-    contentType: string;
-  }>;
-  permissions?: ItemPermissions;
-}
-```
-
-### ItemUploadUrlsResponse
-
-```typescript
-interface ItemUploadUrlsResponse {
-  uploadUrls: SignedUrlResponse[];
-  versionId: string;
-  contentHash: string;
-  versionNumber: number;
-}
-```
-
-### CompleteItemUploadRequest
-
-```typescript
-interface CompleteItemUploadRequest {
-  versionId: string;
-}
-```
-
-### CompleteItemUploadResponse
-
-```typescript
-interface CompleteItemUploadResponse {
-  versionId: string;
-  itemId: string;
-  name: string;
-  description?: string;
-  contentHash: string;
-  fileSize: number;
-  status: string;
-  versionNumber: number;
-  createdAt: string;
-  updatedAt: string;
 }
 ```
 
@@ -308,20 +173,10 @@ import type {
   SignedUrlResponse,
   // Worlds
   WorldPermissions,
-  CreateWorldResponse,
-  WorldUploadUrlsRequest,
-  WorldUploadUrlsResponse,
-  CompleteWorldUploadRequest,
-  CompleteWorldUploadResponse,
   WorldUploadOptions,
   WorldUploadResult,
   // Items
   ItemPermissions,
-  CreateItemResponse,
-  ItemUploadUrlsRequest,
-  ItemUploadUrlsResponse,
-  CompleteItemUploadRequest,
-  CompleteItemUploadResponse,
   ItemUploadOptions,
   ItemUploadResult,
 } from '@xrift/sdk';
