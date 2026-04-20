@@ -138,6 +138,71 @@ class XriftNetworkError extends XriftSdkError {
 
 ---
 
+## Config Parsers
+
+### `parseWorldConfig(json: string): XriftWorldConfig`
+
+Parses a `xrift.json` JSON string and returns a world configuration object. Throws `XriftSdkError` if the `"world"` key is missing.
+
+```typescript
+import { parseWorldConfig } from '@xrift/sdk';
+
+const config = parseWorldConfig(json);
+// config.type === 'world', config.distDir, config.name, config.physics, ...
+```
+
+### `parseItemConfig(json: string): XriftItemConfig`
+
+Parses a `xrift.json` JSON string and returns an item configuration object. Throws `XriftSdkError` if the `"item"` key is missing.
+
+```typescript
+import { parseItemConfig } from '@xrift/sdk';
+
+const config = parseItemConfig(json);
+// config.type === 'item', config.distDir, config.name, config.permissions, ...
+```
+
+### `filterFiles(filePaths: string[], ignorePatterns: string[]): string[]`
+
+Filters an array of file paths, excluding files that match any of the ignore patterns.
+
+```typescript
+import { filterFiles, DEFAULT_IGNORE_PATTERNS } from '@xrift/sdk';
+
+const filtered = filterFiles(['scene.glb', '__federation_shared_abc.js'], DEFAULT_IGNORE_PATTERNS);
+// ['scene.glb']
+```
+
+---
+
+## Node.js Helpers
+
+Available from `@xrift/sdk/node`. These read xrift.json, collect files from the dist directory, and upload in one call.
+
+### `uploadWorldFromDirectory(dirPath: string, options): Promise<WorldUploadResult>`
+
+```typescript
+import { uploadWorldFromDirectory } from '@xrift/sdk/node';
+
+const result = await uploadWorldFromDirectory('./my-project', {
+  token: process.env.XRIFT_TOKEN!,
+  worldId: 'optional-existing-id',
+  onProgress: (p) => console.log(`${p.completed}/${p.total}`),
+});
+```
+
+### `uploadItemFromDirectory(dirPath: string, options): Promise<ItemUploadResult>`
+
+```typescript
+import { uploadItemFromDirectory } from '@xrift/sdk/node';
+
+const result = await uploadItemFromDirectory('./my-project', {
+  token: process.env.XRIFT_TOKEN!,
+});
+```
+
+---
+
 ## Utility Functions
 
 ### `calculateContentHash(files, configValues?): Promise<string>`

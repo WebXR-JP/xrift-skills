@@ -10,6 +10,47 @@ interface XriftClientConfig {
 }
 ```
 
+## Config Types
+
+### XriftWorldConfig
+
+```typescript
+interface XriftWorldConfig {
+  type: 'world';
+  distDir: string;
+  name: string;
+  description?: string;
+  thumbnailPath?: string;
+  ignore: string[];
+  physics?: PhysicsConfig;
+  camera?: CameraConfig;
+  permissions?: WorldPermissions;
+  outputBufferType?: OutputBufferType;
+}
+```
+
+### XriftItemConfig
+
+```typescript
+interface XriftItemConfig {
+  type: 'item';
+  distDir: string;
+  name: string;
+  description?: string;
+  thumbnailPath?: string;
+  ignore: string[];
+  permissions?: ItemPermissions;
+}
+```
+
+### XriftConfig
+
+```typescript
+type XriftConfig = XriftWorldConfig | XriftItemConfig;
+```
+
+---
+
 ## Common Types
 
 ### FileData
@@ -163,6 +204,10 @@ All types are exported from the package entry point:
 
 ```typescript
 import type {
+  // Config
+  XriftConfig,
+  XriftWorldConfig,
+  XriftItemConfig,
   // Common
   FileData,
   UploadFile,
@@ -180,4 +225,13 @@ import type {
   ItemUploadOptions,
   ItemUploadResult,
 } from '@xrift/sdk';
+```
+
+Node.js helpers are exported from a separate entry point:
+
+```typescript
+import {
+  uploadWorldFromDirectory,
+  uploadItemFromDirectory,
+} from '@xrift/sdk/node';
 ```
