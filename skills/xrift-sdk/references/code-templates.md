@@ -170,57 +170,6 @@ try {
 }
 ```
 
-## Node.js: Step-by-Step Upload (Advanced)
-
-```typescript
-import { XriftClient, calculateContentHash, getMimeType } from '@xrift/sdk';
-
-const client = new XriftClient({ token: process.env.XRIFT_TOKEN! });
-
-// Step 1: Create world
-const world = await client.worlds.create();
-console.log('Created world:', world.id);
-
-// Step 2: Prepare files
-const files = [
-  {
-    remotePath: 'scene.glb',
-    data: sceneData,
-    size: sceneData.byteLength,
-    contentType: getMimeType('scene.glb'),
-  },
-];
-
-// Step 3: Calculate hash
-const contentHash = await calculateContentHash(
-  files.map((f) => ({ remotePath: f.remotePath, data: f.data })),
-  { physics: { gravity: -9.8 } },
-);
-
-// Step 4: Get signed URLs
-const urlsResponse = await client.worlds.getUploadUrls(world.id, {
-  name: 'My World',
-  contentHash,
-  fileSize: files.reduce((sum, f) => sum + f.size, 0),
-  files: files.map((f) => ({
-    path: f.remotePath,
-    contentType: f.contentType,
-  })),
-});
-
-// Step 5: Upload each file to its signed URL
-for (let i = 0; i < files.length; i++) {
-  await fetch(urlsResponse.uploadUrls[i].uploadUrl, {
-    method: 'PUT',
-    headers: { 'Content-Type': files[i].contentType },
-    body: files[i].data,
-  });
-}
-
-// Step 6: Complete
-await client.worlds.complete(world.id, urlsResponse.versionId);
-```
-
 ## Browser: Upload from File Input
 
 ```typescript
@@ -307,30 +256,34 @@ const result = await client.worlds.upload(files, {
 
 ## Using xrift.json Configuration (Node.js)
 
+### With uploadWorldFromDirectory (recommended)
+
+```typescript
+import { uploadWorldFromDirectory } from '@xrift/sdk/node';
+
+const result = await uploadWorldFromDirectory('./my-project', {
+  token: process.env.XRIFT_TOKEN!,
+  onProgress: (p) => console.log(`${p.completed}/${p.total}: ${p.currentFile}`),
+});
+
+console.log(`World ID: ${result.worldId}`);
+```
+
+### With parseWorldConfig (manual control)
+
 ```typescript
 import { readFile } from 'node:fs/promises';
-import { XriftClient, getMimeType, type UploadFile } from '@xrift/sdk';
+import { XriftClient, parseWorldConfig, getMimeType, type UploadFile } from '@xrift/sdk';
 
-// Read xrift.json
-const config = JSON.parse(await readFile('xrift.json', 'utf-8'));
+const json = await readFile('xrift.json', 'utf-8');
+const config = parseWorldConfig(json);
 
 const client = new XriftClient({ token: process.env.XRIFT_TOKEN! });
 
-// Read files from dist directory
-const files: UploadFile[] = await Promise.all(
-  config.files.map(async (filePath: string) => {
-    const data = new Uint8Array(await readFile(`dist/${filePath}`));
-    return {
-      remotePath: filePath,
-      data,
-      size: data.byteLength,
-      contentType: getMimeType(filePath),
-    };
-  }),
-);
+// Read files from distDir
+const files: UploadFile[] = [/* ... build UploadFile[] from config.distDir ... */];
 
 const result = await client.worlds.upload(files, {
-  worldId: config.worldId,
   name: config.name,
   description: config.description,
   thumbnailPath: config.thumbnailPath,

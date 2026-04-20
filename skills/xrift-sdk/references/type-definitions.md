@@ -10,6 +10,47 @@ interface XriftClientConfig {
 }
 ```
 
+## Config Types
+
+### XriftWorldConfig
+
+```typescript
+interface XriftWorldConfig {
+  type: 'world';
+  distDir: string;
+  name: string;
+  description?: string;
+  thumbnailPath?: string;
+  ignore: string[];
+  physics?: PhysicsConfig;
+  camera?: CameraConfig;
+  permissions?: WorldPermissions;
+  outputBufferType?: OutputBufferType;
+}
+```
+
+### XriftItemConfig
+
+```typescript
+interface XriftItemConfig {
+  type: 'item';
+  distDir: string;
+  name: string;
+  description?: string;
+  thumbnailPath?: string;
+  ignore: string[];
+  permissions?: ItemPermissions;
+}
+```
+
+### XriftConfig
+
+```typescript
+type XriftConfig = XriftWorldConfig | XriftItemConfig;
+```
+
+---
+
 ## Common Types
 
 ### FileData
@@ -89,77 +130,6 @@ interface WorldPermissions {
 }
 ```
 
-### CreateWorldResponse
-
-```typescript
-interface CreateWorldResponse {
-  id: string;
-  ownerId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-```
-
-### WorldUploadUrlsRequest
-
-```typescript
-interface WorldUploadUrlsRequest {
-  name: string;
-  description?: string;
-  thumbnailPath?: string;
-  physics?: PhysicsConfig;
-  camera?: CameraConfig;
-  permissions?: WorldPermissions;
-  outputBufferType?: OutputBufferType;
-  contentHash: string;
-  fileSize: number;
-  files: Array<{
-    path: string;
-    contentType: string;
-  }>;
-}
-```
-
-### WorldUploadUrlsResponse
-
-```typescript
-interface WorldUploadUrlsResponse {
-  uploadUrls: SignedUrlResponse[];
-  versionId: string;
-  contentHash: string;
-  versionNumber: number;
-}
-```
-
-### CompleteWorldUploadRequest
-
-```typescript
-interface CompleteWorldUploadRequest {
-  versionId: string;
-}
-```
-
-### CompleteWorldUploadResponse
-
-```typescript
-interface CompleteWorldUploadResponse {
-  versionId: string;
-  worldId: string;
-  name: string;
-  description?: string;
-  contentHash: string;
-  fileSize: number;
-  status: string;
-  versionNumber: number;
-  owner: {
-    id: string;
-    displayName: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-```
-
 ### WorldUploadOptions
 
 ```typescript
@@ -201,70 +171,6 @@ interface ItemPermissions {
 }
 ```
 
-### CreateItemResponse
-
-```typescript
-interface CreateItemResponse {
-  id: string;
-  ownerId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-```
-
-### ItemUploadUrlsRequest
-
-```typescript
-interface ItemUploadUrlsRequest {
-  name: string;
-  description?: string;
-  thumbnailPath?: string;
-  contentHash: string;
-  fileSize: number;
-  files: Array<{
-    path: string;
-    contentType: string;
-  }>;
-  permissions?: ItemPermissions;
-}
-```
-
-### ItemUploadUrlsResponse
-
-```typescript
-interface ItemUploadUrlsResponse {
-  uploadUrls: SignedUrlResponse[];
-  versionId: string;
-  contentHash: string;
-  versionNumber: number;
-}
-```
-
-### CompleteItemUploadRequest
-
-```typescript
-interface CompleteItemUploadRequest {
-  versionId: string;
-}
-```
-
-### CompleteItemUploadResponse
-
-```typescript
-interface CompleteItemUploadResponse {
-  versionId: string;
-  itemId: string;
-  name: string;
-  description?: string;
-  contentHash: string;
-  fileSize: number;
-  status: string;
-  versionNumber: number;
-  createdAt: string;
-  updatedAt: string;
-}
-```
-
 ### ItemUploadOptions
 
 ```typescript
@@ -298,6 +204,10 @@ All types are exported from the package entry point:
 
 ```typescript
 import type {
+  // Config
+  XriftConfig,
+  XriftWorldConfig,
+  XriftItemConfig,
   // Common
   FileData,
   UploadFile,
@@ -308,21 +218,20 @@ import type {
   SignedUrlResponse,
   // Worlds
   WorldPermissions,
-  CreateWorldResponse,
-  WorldUploadUrlsRequest,
-  WorldUploadUrlsResponse,
-  CompleteWorldUploadRequest,
-  CompleteWorldUploadResponse,
   WorldUploadOptions,
   WorldUploadResult,
   // Items
   ItemPermissions,
-  CreateItemResponse,
-  ItemUploadUrlsRequest,
-  ItemUploadUrlsResponse,
-  CompleteItemUploadRequest,
-  CompleteItemUploadResponse,
   ItemUploadOptions,
   ItemUploadResult,
 } from '@xrift/sdk';
+```
+
+Node.js helpers are exported from a separate entry point:
+
+```typescript
+import {
+  uploadWorldFromDirectory,
+  uploadItemFromDirectory,
+} from '@xrift/sdk/node';
 ```

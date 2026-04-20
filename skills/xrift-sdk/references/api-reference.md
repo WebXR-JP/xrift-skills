@@ -60,67 +60,6 @@ Integrated upload flow: create → hash → get URLs → upload → complete.
 | `contentHash` | `string` | Content hash (12-char hex) |
 | `files` | `UploadFile[]` | Uploaded files |
 
-### `create(): Promise<CreateWorldResponse>`
-
-Creates a new world resource.
-
-**Returns:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `string` | World ID |
-| `ownerId` | `string` | Owner user ID |
-| `createdAt` | `string` | ISO date string |
-| `updatedAt` | `string` | ISO date string |
-
-### `getUploadUrls(worldId: string, request: WorldUploadUrlsRequest): Promise<WorldUploadUrlsResponse>`
-
-Gets signed upload URLs for files.
-
-**WorldUploadUrlsRequest:**
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | `string` | Yes | World name |
-| `description` | `string` | No | Description |
-| `thumbnailPath` | `string` | No | Thumbnail path |
-| `physics` | `PhysicsConfig` | No | Physics config |
-| `camera` | `CameraConfig` | No | Camera config |
-| `permissions` | `WorldPermissions` | No | Permissions |
-| `outputBufferType` | `OutputBufferType` | No | Buffer type |
-| `contentHash` | `string` | Yes | Content hash |
-| `fileSize` | `number` | Yes | Total file size in bytes |
-| `files` | `Array<{path, contentType}>` | Yes | File metadata |
-
-**Returns: `WorldUploadUrlsResponse`**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `uploadUrls` | `SignedUrlResponse[]` | Signed URLs for each file |
-| `versionId` | `string` | Version ID |
-| `contentHash` | `string` | Content hash |
-| `versionNumber` | `number` | Version number |
-
-### `complete(worldId: string, versionId: string): Promise<CompleteWorldUploadResponse>`
-
-Notifies the server that all files have been uploaded.
-
-**Returns: `CompleteWorldUploadResponse`**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `versionId` | `string` | Version ID |
-| `worldId` | `string` | World ID |
-| `name` | `string` | World name |
-| `description` | `string` | Description |
-| `contentHash` | `string` | Content hash |
-| `fileSize` | `number` | Total file size |
-| `status` | `string` | Upload status |
-| `versionNumber` | `number` | Version number |
-| `owner` | `{id, displayName}` | Owner info |
-| `createdAt` | `string` | ISO date string |
-| `updatedAt` | `string` | ISO date string |
-
 ---
 
 ## ItemsApi
@@ -151,27 +90,6 @@ Integrated upload flow for items.
 | `versionNumber` | `number` | Version number |
 | `contentHash` | `string` | Content hash |
 | `files` | `UploadFile[]` | Uploaded files |
-
-### `create(): Promise<CreateItemResponse>`
-
-Creates a new item resource.
-
-**Returns:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `string` | Item ID |
-| `ownerId` | `string` | Owner user ID |
-| `createdAt` | `string` | ISO date string |
-| `updatedAt` | `string` | ISO date string |
-
-### `getUploadUrls(itemId: string, request: ItemUploadUrlsRequest): Promise<ItemUploadUrlsResponse>`
-
-Gets signed upload URLs for item files.
-
-### `complete(itemId: string, versionId: string): Promise<CompleteItemUploadResponse>`
-
-Notifies upload completion.
 
 ---
 
@@ -216,6 +134,71 @@ Thrown on network connectivity issues (DNS failure, timeout, etc.).
 class XriftNetworkError extends XriftSdkError {
   readonly cause?: Error;
 }
+```
+
+---
+
+## Config Parsers
+
+### `parseWorldConfig(json: string): XriftWorldConfig`
+
+Parses a `xrift.json` JSON string and returns a world configuration object. Throws `XriftSdkError` if the `"world"` key is missing.
+
+```typescript
+import { parseWorldConfig } from '@xrift/sdk';
+
+const config = parseWorldConfig(json);
+// config.type === 'world', config.distDir, config.name, config.physics, ...
+```
+
+### `parseItemConfig(json: string): XriftItemConfig`
+
+Parses a `xrift.json` JSON string and returns an item configuration object. Throws `XriftSdkError` if the `"item"` key is missing.
+
+```typescript
+import { parseItemConfig } from '@xrift/sdk';
+
+const config = parseItemConfig(json);
+// config.type === 'item', config.distDir, config.name, config.permissions, ...
+```
+
+### `filterFiles(filePaths: string[], ignorePatterns: string[]): string[]`
+
+Filters an array of file paths, excluding files that match any of the ignore patterns.
+
+```typescript
+import { filterFiles, DEFAULT_IGNORE_PATTERNS } from '@xrift/sdk';
+
+const filtered = filterFiles(['scene.glb', '__federation_shared_abc.js'], DEFAULT_IGNORE_PATTERNS);
+// ['scene.glb']
+```
+
+---
+
+## Node.js Helpers
+
+Available from `@xrift/sdk/node`. These read xrift.json, collect files from the dist directory, and upload in one call.
+
+### `uploadWorldFromDirectory(dirPath: string, options): Promise<WorldUploadResult>`
+
+```typescript
+import { uploadWorldFromDirectory } from '@xrift/sdk/node';
+
+const result = await uploadWorldFromDirectory('./my-project', {
+  token: process.env.XRIFT_TOKEN!,
+  worldId: 'optional-existing-id',
+  onProgress: (p) => console.log(`${p.completed}/${p.total}`),
+});
+```
+
+### `uploadItemFromDirectory(dirPath: string, options): Promise<ItemUploadResult>`
+
+```typescript
+import { uploadItemFromDirectory } from '@xrift/sdk/node';
+
+const result = await uploadItemFromDirectory('./my-project', {
+  token: process.env.XRIFT_TOKEN!,
+});
 ```
 
 ---
