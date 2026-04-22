@@ -447,3 +447,39 @@ export const UserTracker = () => {
   return null
 }
 ```
+
+## Avatar Height-based HUD Placement
+
+```typescript
+import { useFrame } from '@react-three/fiber'
+import { useUsers } from '@xrift/world-components'
+import { useRef } from 'react'
+import { Group } from 'three'
+import { Text } from '@react-three/drei'
+
+export const UserNameTag = ({ user, getMovement, getAvatarHeight }) => {
+  const groupRef = useRef<Group>(null)
+
+  useFrame(() => {
+    const movement = getMovement(user.id)
+    if (!movement || !groupRef.current) return
+
+    const avatarHeight = getAvatarHeight?.(user.id)
+    const headOffset = (avatarHeight?.height ?? 1.5) + 0.2
+
+    groupRef.current.position.set(
+      movement.position.x,
+      movement.position.y + headOffset,
+      movement.position.z
+    )
+  })
+
+  return (
+    <group ref={groupRef}>
+      <Text fontSize={0.15}>{user.displayName}</Text>
+    </group>
+  )
+}
+```
+
+**Note**: `getAvatarHeight` is optional. Always use optional chaining (`?.`). Default height is 1.5m if unavailable.

@@ -34,6 +34,17 @@ interface PlayerMovement {
 }
 ```
 
+## AvatarHeight
+
+Represents an avatar's height information. Retrieved from `getAvatarHeight()` / `getLocalAvatarHeight()` via the `useUsers()` hook.
+
+```typescript
+interface AvatarHeight {
+  height: number    // Full height of the avatar (meters)
+  eyeHeight: number // Height from ground to the avatar's eye position (meters)
+}
+```
+
 ## VRTrackingData
 
 VR mode tracking information. Retrieved from `PlayerMovement.vrTracking`.
