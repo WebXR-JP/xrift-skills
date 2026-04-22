@@ -81,12 +81,16 @@ Hook for getting user information and positions.
 | `remoteUsers` | `User[]` | List of other users |
 | `getMovement(socketId)` | `(id: string) => PlayerMovement \| null` | Get movement data for a specific user |
 | `getLocalMovement()` | `() => PlayerMovement` | Get current user's movement data |
+| `getAvatarHeight?(userId)` | `(id: string) => AvatarHeight \| undefined` | Get avatar height data for a specific user |
+| `getLocalAvatarHeight?()` | `() => AvatarHeight` | Get current user's avatar height data |
 
 ```typescript
 import { useUsers } from '@xrift/world-components'
 
-const { localUser, remoteUsers, getMovement, getLocalMovement } = useUsers()
+const { localUser, remoteUsers, getMovement, getLocalMovement, getAvatarHeight, getLocalAvatarHeight } = useUsers()
 ```
+
+> `getAvatarHeight` / `getLocalAvatarHeight` are optional. Use optional chaining (`?.`) when calling. Default: `{ height: 1.5, eyeHeight: 1.35 }`
 
 ### useSpawnPoint()
 
