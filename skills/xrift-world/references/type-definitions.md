@@ -83,6 +83,46 @@ interface ConfirmContextValue {
 }
 ```
 
+## FileInputRequest
+
+Options passed to `requestFileInput()` from the `useFileInput()` hook.
+
+```typescript
+interface FileInputRequest {
+  id: string                              // Unique identifier for the input
+  accept?: string                         // Accepted file types (e.g. '.vrm', 'image/*')
+  multiple?: boolean                      // Allow multiple file selection
+  maxSize?: number                        // Maximum file size in bytes
+  onSelect: (files: File[]) => void       // Callback when files are selected
+  onCancel?: () => void                   // Callback when cancelled
+  onError?: (error: FileInputError) => void // Callback on error
+}
+```
+
+## FileInputError
+
+Error information returned to `onError` callback.
+
+```typescript
+type FileInputErrorType = 'file_too_large' | 'invalid_type'
+
+interface FileInputError {
+  type: FileInputErrorType
+  message: string
+}
+```
+
+## FileInputContextValue
+
+Context value provided by `FileInputContext`. Retrieved via the `useFileInput()` hook.
+
+```typescript
+interface FileInputContextValue {
+  requestFileInput: (request: FileInputRequest) => void
+  isActive: boolean
+}
+```
+
 ## PortalProps
 
 Props for the `Portal` component.

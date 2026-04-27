@@ -274,6 +274,38 @@ const fontFamilies = useDefaultFont(FONT_LOCALES)
 </Container>
 ```
 
+### useFileInput()
+
+Hook for opening a file picker dialog from the 3D world. Displays an overlay UI with drag & drop support. If called during a VR session, the session is automatically ended before the file picker appears.
+
+**Returns**: `{ requestFileInput: (request: FileInputRequest) => void }`
+
+`FileInputRequest`:
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `id` | `string` | Yes | Unique identifier for the input |
+| `accept` | `string` | No | Accepted file types (e.g. `'.vrm'`, `'image/*'`) |
+| `multiple` | `boolean` | No | Allow multiple file selection |
+| `maxSize` | `number` | No | Maximum file size in bytes |
+| `onSelect` | `(files: File[]) => void` | Yes | Callback when files are selected |
+| `onCancel` | `() => void` | No | Callback when cancelled |
+| `onError` | `(error: FileInputError) => void` | No | Callback on error (e.g. file too large) |
+
+`FileInputError`: `{ type: 'file_too_large' | 'invalid_type', message: string }`
+
+```typescript
+import { useFileInput } from '@xrift/world-components'
+
+const { requestFileInput } = useFileInput()
+requestFileInput({
+  id: 'avatar-upload',
+  accept: '.vrm',
+  maxSize: 30 * 1024 * 1024,
+  onSelect: (files) => { /* handle files */ },
+  onError: (error) => { /* handle error */ },
+})
+```
+
 ---
 
 ## Components
