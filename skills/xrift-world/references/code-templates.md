@@ -483,3 +483,51 @@ export const UserNameTag = ({ user, getMovement, getAvatarHeight }) => {
 ```
 
 **Note**: `getAvatarHeight` is optional. Always use optional chaining (`?.`). Default height is 1.5m if unavailable.
+
+## File Upload with useFileInput
+
+Use `useFileInput` to let users select files from the 3D world. The overlay supports both click-to-browse and drag & drop.
+
+```typescript
+import { useFileInput, Interactable } from '@xrift/world-components'
+import { useState } from 'react'
+import { Text } from '@react-three/drei'
+
+export const FileUploader = () => {
+  const { requestFileInput } = useFileInput()
+  const [status, setStatus] = useState('Click to upload')
+
+  const handleUpload = () => {
+    requestFileInput({
+      id: 'image-upload',
+      accept: 'image/*',
+      maxSize: 10 * 1024 * 1024, // 10MB
+      onSelect: (files) => {
+        setStatus(`Selected: ${files[0].name}`)
+      },
+      onCancel: () => {
+        setStatus('Cancelled')
+      },
+      onError: (error) => {
+        setStatus(`Error: ${error.message}`)
+      },
+    })
+  }
+
+  return (
+    <group>
+      <Interactable id="upload-btn" onInteract={handleUpload} interactionText="Upload Image">
+        <mesh position={[0, 1, 0]}>
+          <boxGeometry args={[1, 0.5, 0.1]} />
+          <meshStandardMaterial color="#7b2d8b" />
+        </mesh>
+      </Interactable>
+      <Text position={[0, 1.6, 0]} fontSize={0.12} color="white" anchorX="center">
+        {status}
+      </Text>
+    </group>
+  )
+}
+```
+
+**Note**: If called during a VR session, the session is automatically ended before the file picker opens. The `accept` prop filters files both in the file picker dialog and when using drag & drop.
