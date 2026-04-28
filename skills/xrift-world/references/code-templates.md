@@ -531,3 +531,67 @@ export const FileUploader = () => {
 ```
 
 **Note**: If called during a VR session, the session is automatically ended before the file picker opens. The `accept` prop filters files both in the file picker dialog and when using drag & drop.
+
+## Shared File Upload with useSharedFile
+
+Use `useSharedFile` to upload files to the instance's shared storage and retrieve the list of shared files. Combine with `useFileInput` to let users pick a file, then upload it with progress tracking.
+
+```typescript
+import { useSharedFile, useFileInput, Interactable } from '@xrift/world-components'
+import { useCallback, useState } from 'react'
+import { Text } from '@react-three/drei'
+
+export const SharedFileUploader = () => {
+  const { uploadSharedFile, getSharedFiles } = useSharedFile()
+  const { requestFileInput } = useFileInput()
+  const [status, setStatus] = useState('Click to upload')
+
+  const handleUpload = useCallback(() => {
+    requestFileInput({
+      id: 'shared-upload',
+      accept: 'image/*',
+      maxSize: 10 * 1024 * 1024,
+      onSelect: async (files) => {
+        const file = files[0]
+        if (!file) return
+        setStatus(`Uploading: ${file.name}`)
+        try {
+          const result = await uploadSharedFile(file, (progress) => {
+            setStatus(`Uploading: ${progress}%`)
+          })
+          setStatus(`Done: ${result.fileName}`)
+        } catch (e) {
+          setStatus(`Error: ${e instanceof Error ? e.message : String(e)}`)
+        }
+      },
+    })
+  }, [requestFileInput, uploadSharedFile])
+
+  const handleList = useCallback(async () => {
+    const files = await getSharedFiles()
+    setStatus(files.length > 0 ? `${files.length} files` : 'No shared files')
+  }, [getSharedFiles])
+
+  return (
+    <group>
+      <Interactable id="upload-btn" onInteract={handleUpload} interactionText="Upload File">
+        <mesh position={[0, 1, 0]}>
+          <boxGeometry args={[1, 0.5, 0.1]} />
+          <meshStandardMaterial color="#d4a017" />
+        </mesh>
+      </Interactable>
+      <Interactable id="list-btn" onInteract={handleList} interactionText="List Files">
+        <mesh position={[1.5, 1, 0]}>
+          <boxGeometry args={[1, 0.5, 0.1]} />
+          <meshStandardMaterial color="#c47f17" />
+        </mesh>
+      </Interactable>
+      <Text position={[0.75, 1.6, 0]} fontSize={0.12} color="white" anchorX="center" maxWidth={3}>
+        {status}
+      </Text>
+    </group>
+  )
+}
+```
+
+**Note**: `uploadSharedFile` returns a `SharedFileInfo` object containing the `publicUrl` which can be used to display the uploaded file (e.g. as a texture on a 3D surface). The `onProgress` callback receives a percentage value (0-100).
