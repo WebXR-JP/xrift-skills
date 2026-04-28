@@ -123,6 +123,32 @@ interface FileInputContextValue {
 }
 ```
 
+## SharedFileInfo
+
+Information about a shared file uploaded to an instance.
+
+```typescript
+interface SharedFileInfo {
+  id: string            // Unique file ID
+  fileName: string      // Original file name
+  contentType: string   // MIME type (e.g. 'image/png')
+  fileSize: number      // File size in bytes
+  publicUrl: string     // Public URL for accessing the file
+  createdAt: string     // Creation date (ISO 8601)
+}
+```
+
+## SharedFileContextValue
+
+Context value provided by `SharedFileContext`. Retrieved via the `useSharedFile()` hook.
+
+```typescript
+interface SharedFileContextValue {
+  uploadSharedFile: (file: File, onProgress?: (progress: number) => void) => Promise<SharedFileInfo>
+  getSharedFiles: () => Promise<SharedFileInfo[]>
+}
+```
+
 ## PortalProps
 
 Props for the `Portal` component.

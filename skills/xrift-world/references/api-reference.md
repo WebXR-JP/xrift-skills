@@ -308,6 +308,52 @@ requestFileInput({
 
 ---
 
+### useSharedFile()
+
+Hook for uploading and listing shared files within an instance. Upload images or documents from the 3D world and share them with other users. Progress tracking is supported via an optional callback.
+
+**Returns**: `{ uploadSharedFile, getSharedFiles }`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `uploadSharedFile` | `(file: File, onProgress?: (progress: number) => void) => Promise<SharedFileInfo>` | Upload a file with optional progress callback |
+| `getSharedFiles` | `() => Promise<SharedFileInfo[]>` | Get the list of shared files |
+
+`SharedFileInfo`:
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Unique file ID |
+| `fileName` | `string` | File name |
+| `contentType` | `string` | MIME type |
+| `fileSize` | `number` | File size in bytes |
+| `publicUrl` | `string` | Public URL |
+| `createdAt` | `string` | Creation date (ISO 8601) |
+
+```typescript
+import { useSharedFile, useFileInput } from '@xrift/world-components'
+
+const { uploadSharedFile, getSharedFiles } = useSharedFile()
+const { requestFileInput } = useFileInput()
+
+// Upload a file with progress tracking
+requestFileInput({
+  id: 'shared-upload',
+  accept: 'image/*',
+  maxSize: 10 * 1024 * 1024,
+  onSelect: async (files) => {
+    const result = await uploadSharedFile(files[0], (progress) => {
+      console.log(`${progress}%`)
+    })
+    console.log('URL:', result.publicUrl)
+  },
+})
+
+// List shared files
+const files = await getSharedFiles()
+```
+
+---
+
 ## Components
 
 ### Interactable
