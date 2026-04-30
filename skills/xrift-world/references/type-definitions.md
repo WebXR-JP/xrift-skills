@@ -338,6 +338,16 @@ interface VoiceVolumeOverrideContextValue {
 }
 ```
 
+## ItemContextValue
+
+Value returned by `useItem()`. Contains the unique placement ID for the item.
+
+```typescript
+interface ItemContextValue {
+  id: string  // Unique placement ID (UUID)
+}
+```
+
 ## Position3D / Rotation3D
 
 Basic 3D coordinate types.

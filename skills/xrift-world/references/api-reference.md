@@ -354,6 +354,28 @@ const files = await getSharedFiles()
 
 ---
 
+### useItem()
+
+Hook for getting the unique ID of a placed item. Each placement gets a different ID, even for the same item type.
+
+**Returns**: `{ id: string }`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Unique placement ID (UUID) |
+
+```typescript
+import { useItem, useInstanceState } from '@xrift/world-components'
+
+const { id } = useItem()
+// Use id to scope per-placement state
+const [votes, setVotes] = useInstanceState(`votes-${id}`, 0)
+```
+
+> Must be used within ItemProvider (automatically provided by the platform).
+
+---
+
 ## Components
 
 ### Interactable
