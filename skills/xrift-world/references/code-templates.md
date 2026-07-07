@@ -108,6 +108,35 @@ export const InteractiveButton = ({ id }: { id: string }) => {
 }
 ```
 
+## Grabbable Object (Pick Up and Place)
+
+```typescript
+import { useState } from 'react'
+import { Grabbable, type GrabbableTransform } from '@xrift/world-components'
+
+export const GrabbableBall = () => {
+  // transform is applied to the root group; children are in local coordinates.
+  // On release, onMove returns the new pose — reflect it back into state.
+  const [transform, setTransform] = useState<GrabbableTransform>({
+    position: { x: 2, y: 0.5, z: -2 },
+    rotation: { x: 0, y: 0, z: 0 },
+  })
+
+  return (
+    <Grabbable
+      id="ball"
+      transform={transform}
+      onMove={(next) => setTransform((prev) => ({ ...prev, ...next }))}
+    >
+      <mesh>
+        <sphereGeometry args={[0.3]} />
+        <meshStandardMaterial color="gold" />
+      </mesh>
+    </Grabbable>
+  )
+}
+```
+
 ## Animation (useFrame)
 
 ```typescript
