@@ -410,7 +410,7 @@ import { Interactable } from '@xrift/world-components'
 
 Declares an object as grabbable (explicit opt-in, like `Interactable`). Players grab it, float it in front of their view, and place it anywhere. Automatically sets `LAYERS.GRABBABLE` on child objects; the grabbing foundation is provided by the platform (and by `DevEnvironment` during development).
 
-`transform` is applied to the root group, so children are written in local coordinates. On release, `onMove` returns the new pose — reflect it in state to update `transform`.
+`transform` and `onMove` use the parent's local coordinate space (same as a normal `position` prop); children are written relative to the origin. Nesting under a transformed parent works correctly — coordinates are converted to/from world space internally. On release, `onMove` returns the new pose — reflect it in state to update `transform`.
 
 **Props**:
 | Prop | Type | Required | Description |

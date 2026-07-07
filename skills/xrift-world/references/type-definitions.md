@@ -372,7 +372,7 @@ Pose types for the `Grabbable` component. `transform` prop takes `GrabbableTrans
 
 ```typescript
 interface GrabbableTransform {
-  position: { x: number; y: number; z: number }  // World coordinates
+  position: { x: number; y: number; z: number }  // Parent-local coordinates (same as a normal position prop)
   rotation: { x: number; y: number; z: number }  // Euler angles (radians)
   scale?: number                                   // Uniform scale (defaults to 1)
 }
