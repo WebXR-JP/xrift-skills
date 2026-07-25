@@ -310,9 +310,9 @@ requestFileInput({
 
 ### useSharedFile()
 
-Hook for uploading, listing, locking (deletion protection), and updating shared files within an instance. Upload images or documents from the 3D world and share them with other users. Progress tracking is supported via an optional callback.
+Hook for uploading, listing, locking (deletion protection), updating, and deleting shared files within an instance. Upload images or documents from the 3D world and share them with other users. Progress tracking is supported via an optional callback.
 
-**Returns**: `{ uploadSharedFile, getSharedFiles, setSharedFileLock, updateSharedFile }`
+**Returns**: `{ uploadSharedFile, getSharedFiles, setSharedFileLock, updateSharedFile, deleteSharedFile }`
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -320,6 +320,7 @@ Hook for uploading, listing, locking (deletion protection), and updating shared 
 | `getSharedFiles` | `() => Promise<SharedFileInfo[]>` | Get the list of shared files |
 | `setSharedFileLock` | `(fileId: string, locked: boolean) => Promise<SharedFileInfo>` | Set the lock state (deletion protection) of a file |
 | `updateSharedFile` | `(fileId: string, updates: UpdateSharedFileParams) => Promise<SharedFileInfo>` | Update file info (fileName / description / metadata). Pass `null` to clear description / metadata |
+| `deleteSharedFile` | `(fileId: string) => Promise<void>` | Delete a file |
 
 `SharedFileInfo`:
 | Property | Type | Description |
@@ -334,12 +335,12 @@ Hook for uploading, listing, locking (deletion protection), and updating shared 
 | `metadata` | `Record<string, string> \| null` | Flat key-value metadata (up to 20 entries, keys 1-64 chars, values up to 500 chars) |
 | `createdAt` | `string` | Creation date (ISO 8601) |
 
-**Note**: A locked file cannot be deleted, and `updateSharedFile` on it is rejected. Unlock first with `setSharedFileLock(fileId, false)`, update, then re-lock.
+**Note**: A locked file rejects both `deleteSharedFile` and `updateSharedFile`. Unlock first with `setSharedFileLock(fileId, false)`, then delete / update.
 
 ```typescript
 import { useSharedFile, useFileInput } from '@xrift/world-components'
 
-const { uploadSharedFile, getSharedFiles, setSharedFileLock, updateSharedFile } = useSharedFile()
+const { uploadSharedFile, getSharedFiles, setSharedFileLock, updateSharedFile, deleteSharedFile } = useSharedFile()
 const { requestFileInput } = useFileInput()
 
 // Upload a file with progress tracking, description and metadata
@@ -364,6 +365,10 @@ const files = await getSharedFiles()
 
 // Update description / metadata (null clears the field)
 await updateSharedFile(fileId, { description: 'Exhibit B', metadata: null })
+
+// Delete a file (unlock first if locked)
+await setSharedFileLock(fileId, false)
+await deleteSharedFile(fileId)
 ```
 
 ---
