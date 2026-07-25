@@ -180,6 +180,8 @@ interface SharedFileContextValue {
   setSharedFileLock: (fileId: string, locked: boolean) => Promise<SharedFileInfo>
   // Update fileName / description / metadata. Rejected while locked
   updateSharedFile: (fileId: string, updates: UpdateSharedFileParams) => Promise<SharedFileInfo>
+  // Delete a file. Rejected while locked
+  deleteSharedFile: (fileId: string) => Promise<void>
 }
 ```
 

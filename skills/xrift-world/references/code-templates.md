@@ -605,7 +605,7 @@ import { useSharedFile } from '@xrift/world-components'
 import { useCallback } from 'react'
 
 export const useExhibitUpload = () => {
-  const { uploadSharedFile, setSharedFileLock, updateSharedFile } = useSharedFile()
+  const { uploadSharedFile, setSharedFileLock, updateSharedFile, deleteSharedFile } = useSharedFile()
 
   const uploadExhibit = useCallback(
     async (file: File) => {
@@ -631,11 +631,20 @@ export const useExhibitUpload = () => {
     [setSharedFileLock, updateSharedFile],
   )
 
-  return { uploadExhibit, updateExhibitDescription }
+  const removeExhibit = useCallback(
+    async (fileId: string) => {
+      // Remove the exhibit and delete the file itself (unlock first)
+      await setSharedFileLock(fileId, false)
+      await deleteSharedFile(fileId)
+    },
+    [setSharedFileLock, deleteSharedFile],
+  )
+
+  return { uploadExhibit, updateExhibitDescription, removeExhibit }
 }
 ```
 
-**Note**: A locked file cannot be deleted, and `updateSharedFile` on it is rejected by the backend (`FILE_LOCKED`). Pass `null` for `description` / `metadata` in `updateSharedFile` to clear them.
+**Note**: A locked file rejects both `deleteSharedFile` and `updateSharedFile` on the backend (`FILE_LOCKED`). Unlock first with `setSharedFileLock(fileId, false)`. Pass `null` for `description` / `metadata` in `updateSharedFile` to clear them.
 
 ## World Storage (Persistent KV)
 
