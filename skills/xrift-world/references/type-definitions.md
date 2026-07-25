@@ -129,12 +129,38 @@ Information about a shared file uploaded to an instance.
 
 ```typescript
 interface SharedFileInfo {
-  id: string            // Unique file ID
-  fileName: string      // Original file name
-  contentType: string   // MIME type (e.g. 'image/png')
-  fileSize: number      // File size in bytes
-  publicUrl: string     // Public URL for accessing the file
-  createdAt: string     // Creation date (ISO 8601)
+  id: string                                // Unique file ID
+  fileName: string                          // Original file name
+  contentType: string                       // MIME type (e.g. 'image/png')
+  fileSize: number                          // File size in bytes
+  publicUrl: string                         // Public URL for accessing the file
+  locked: boolean                           // Whether the file is locked (deletion protection)
+  description: string | null                // Description text (up to 500 characters)
+  metadata: Record<string, string> | null   // Flat key-value metadata (up to 20 entries)
+  createdAt: string                         // Creation date (ISO 8601)
+}
+```
+
+## UploadSharedFileOptions
+
+Optional information attached at upload time. Passed as the third argument of `uploadSharedFile`.
+
+```typescript
+interface UploadSharedFileOptions {
+  description?: string               // Description text (up to 500 characters)
+  metadata?: Record<string, string>  // Flat key-value metadata (up to 20 entries, keys 1-64 chars, values up to 500 chars)
+}
+```
+
+## UpdateSharedFileParams
+
+Update payload for `updateSharedFile`. Pass `null` to clear `description` / `metadata`.
+
+```typescript
+interface UpdateSharedFileParams {
+  fileName?: string
+  description?: string | null               // null clears the field
+  metadata?: Record<string, string> | null  // null clears the field
 }
 ```
 
@@ -144,8 +170,69 @@ Context value provided by `SharedFileContext`. Retrieved via the `useSharedFile(
 
 ```typescript
 interface SharedFileContextValue {
-  uploadSharedFile: (file: File, onProgress?: (progress: number) => void) => Promise<SharedFileInfo>
+  uploadSharedFile: (
+    file: File,
+    onProgress?: (progress: number) => void,
+    options?: UploadSharedFileOptions,
+  ) => Promise<SharedFileInfo>
   getSharedFiles: () => Promise<SharedFileInfo[]>
+  // Set the lock state (deletion protection). Locked files cannot be deleted or updated
+  setSharedFileLock: (fileId: string, locked: boolean) => Promise<SharedFileInfo>
+  // Update fileName / description / metadata. Rejected while locked
+  updateSharedFile: (fileId: string, updates: UpdateSharedFileParams) => Promise<SharedFileInfo>
+}
+```
+
+## WorldStorageContextValue / SharedWorldStorage / PlayerWorldStorage
+
+World-scoped persistent KV storage. Retrieved via the `useWorldStorage()` hook.
+
+```typescript
+interface WorldStorageContextValue {
+  shared: SharedWorldStorage  // Shared KV (one shared value per world)
+  player: PlayerWorldStorage  // Per-player KV
+}
+
+interface SharedWorldStorage {
+  get: (key: string) => Promise<unknown>                       // undefined if missing
+  list: () => Promise<WorldStorageEntry[]>
+  set: (key: string, value: unknown) => Promise<void>
+  increment: (key: string, delta: number) => Promise<number>   // atomic add, returns new value
+  delete: (key: string) => Promise<void>                       // idempotent
+}
+
+interface PlayerWorldStorage {
+  get: (key: string, options?: { userId?: string }) => Promise<unknown>  // userId: read another user's value
+  list: (options?: { userId?: string }) => Promise<WorldStorageEntry[]>
+  set: (key: string, value: unknown) => Promise<void>                    // own value only
+  increment: (key: string, delta: number) => Promise<number>             // own value only
+  delete: (key: string) => Promise<void>                                 // own value only
+}
+
+interface WorldStorageEntry {
+  key: string
+  value: unknown
+}
+```
+
+## WorldStorageError
+
+Error thrown when a World Storage operation fails.
+
+```typescript
+type WorldStorageErrorCode =
+  | 'QUOTA_EXCEEDED'   // Total world capacity (10MB) exceeded
+  | 'LIMIT_EXCEEDED'   // Key count limit exceeded (shared: 256 / per user: 64)
+  | 'ENTRY_TOO_LARGE'  // Entry size limit (100KB) exceeded
+  | 'TYPE_MISMATCH'    // increment target is not a number
+  | 'INVALID_KEY'      // Key does not match /^[A-Za-z0-9_.\-:]{1,128}$/
+  | 'NOT_IN_WORLD'     // Writing while not in a world instance
+  | 'RATE_LIMITED'     // Write rate limit exceeded (30/min per user)
+  | 'UNAUTHORIZED'     // Writing as an unauthenticated guest
+  | 'UNKNOWN'
+
+class WorldStorageError extends Error {
+  readonly code: WorldStorageErrorCode
 }
 ```
 

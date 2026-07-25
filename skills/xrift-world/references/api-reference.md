@@ -310,14 +310,16 @@ requestFileInput({
 
 ### useSharedFile()
 
-Hook for uploading and listing shared files within an instance. Upload images or documents from the 3D world and share them with other users. Progress tracking is supported via an optional callback.
+Hook for uploading, listing, locking (deletion protection), and updating shared files within an instance. Upload images or documents from the 3D world and share them with other users. Progress tracking is supported via an optional callback.
 
-**Returns**: `{ uploadSharedFile, getSharedFiles }`
+**Returns**: `{ uploadSharedFile, getSharedFiles, setSharedFileLock, updateSharedFile }`
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `uploadSharedFile` | `(file: File, onProgress?: (progress: number) => void) => Promise<SharedFileInfo>` | Upload a file with optional progress callback |
+| `uploadSharedFile` | `(file: File, onProgress?: (progress: number) => void, options?: UploadSharedFileOptions) => Promise<SharedFileInfo>` | Upload a file with optional progress callback and optional description / metadata |
 | `getSharedFiles` | `() => Promise<SharedFileInfo[]>` | Get the list of shared files |
+| `setSharedFileLock` | `(fileId: string, locked: boolean) => Promise<SharedFileInfo>` | Set the lock state (deletion protection) of a file |
+| `updateSharedFile` | `(fileId: string, updates: UpdateSharedFileParams) => Promise<SharedFileInfo>` | Update file info (fileName / description / metadata). Pass `null` to clear description / metadata |
 
 `SharedFileInfo`:
 | Property | Type | Description |
@@ -327,29 +329,41 @@ Hook for uploading and listing shared files within an instance. Upload images or
 | `contentType` | `string` | MIME type |
 | `fileSize` | `number` | File size in bytes |
 | `publicUrl` | `string` | Public URL |
+| `locked` | `boolean` | Whether the file is locked (deletion protection) |
+| `description` | `string \| null` | Description text (up to 500 characters) |
+| `metadata` | `Record<string, string> \| null` | Flat key-value metadata (up to 20 entries, keys 1-64 chars, values up to 500 chars) |
 | `createdAt` | `string` | Creation date (ISO 8601) |
+
+**Note**: A locked file cannot be deleted, and `updateSharedFile` on it is rejected. Unlock first with `setSharedFileLock(fileId, false)`, update, then re-lock.
 
 ```typescript
 import { useSharedFile, useFileInput } from '@xrift/world-components'
 
-const { uploadSharedFile, getSharedFiles } = useSharedFile()
+const { uploadSharedFile, getSharedFiles, setSharedFileLock, updateSharedFile } = useSharedFile()
 const { requestFileInput } = useFileInput()
 
-// Upload a file with progress tracking
+// Upload a file with progress tracking, description and metadata
 requestFileInput({
   id: 'shared-upload',
   accept: 'image/*',
   maxSize: 10 * 1024 * 1024,
   onSelect: async (files) => {
-    const result = await uploadSharedFile(files[0], (progress) => {
-      console.log(`${progress}%`)
-    })
+    const result = await uploadSharedFile(
+      files[0],
+      (progress) => console.log(`${progress}%`),
+      { description: 'Exhibit A', metadata: { exhibit: 'pedestal-1' } },
+    )
     console.log('URL:', result.publicUrl)
+    // Lock right after upload to prevent accidental deletion
+    await setSharedFileLock(result.id, true)
   },
 })
 
 // List shared files
 const files = await getSharedFiles()
+
+// Update description / metadata (null clears the field)
+await updateSharedFile(fileId, { description: 'Exhibit B', metadata: null })
 ```
 
 ---
@@ -373,6 +387,73 @@ const [votes, setVotes] = useInstanceState(`votes-${id}`, 0)
 ```
 
 > Must be used within ItemProvider (automatically provided by the platform).
+
+---
+
+### useWorldStorage()
+
+Hook for world-scoped persistent key-value storage (World Storage). Persist rankings, in-world currency, registration data, and more across instances. Unlike `useInstanceState` (volatile, per-instance), World Storage survives instance shutdowns and is shared across all instances of the world.
+
+**Returns**: `{ shared, player }`
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `shared` | `SharedWorldStorage` | Shared KV (one shared value per world). Any authenticated user in the instance can write |
+| `player` | `PlayerWorldStorage` | Per-player KV. Writes are limited to your own values; reads can access other users' values |
+
+`SharedWorldStorage`:
+| Method | Type | Description |
+|--------|------|-------------|
+| `get` | `(key: string) => Promise<unknown>` | Get a value (`undefined` if missing) |
+| `list` | `() => Promise<WorldStorageEntry[]>` | Get all keys and values |
+| `set` | `(key: string, value: unknown) => Promise<void>` | Save a value |
+| `increment` | `(key: string, delta: number) => Promise<number>` | Atomically add to a numeric value and return the result |
+| `delete` | `(key: string) => Promise<void>` | Delete a value (idempotent) |
+
+`PlayerWorldStorage`:
+| Method | Type | Description |
+|--------|------|-------------|
+| `get` | `(key: string, options?: { userId?: string }) => Promise<unknown>` | Get a value. Pass `userId` to read another user's value |
+| `list` | `(options?: { userId?: string }) => Promise<WorldStorageEntry[]>` | Get all keys and values. Pass `userId` to read another user's values |
+| `set` | `(key: string, value: unknown) => Promise<void>` | Save your own value |
+| `increment` | `(key: string, delta: number) => Promise<number>` | Atomically add to your own numeric value and return the result |
+| `delete` | `(key: string) => Promise<void>` | Delete your own value (idempotent) |
+
+**Constraints**:
+- Save at game-event milestones. For per-frame sync, use `useInstanceState` instead
+- Capacity: 10MB total per world / 100KB per entry / 256 shared keys / 64 keys per user
+- Key format: `/^[A-Za-z0-9_.\-:]{1,128}$/`
+- Rate limit: 30 writes per minute per user
+- Reads are public (accessible via API without authentication) — never store secrets
+- Guests are read-only (writes throw `WorldStorageError` with code `UNAUTHORIZED`)
+- For currency / scores, use `increment` instead of `set` (no lost updates under concurrency)
+
+**Errors**: failed operations throw `WorldStorageError` with a `code` property: `QUOTA_EXCEEDED` | `LIMIT_EXCEEDED` | `ENTRY_TOO_LARGE` | `TYPE_MISMATCH` | `INVALID_KEY` | `NOT_IN_WORLD` | `RATE_LIMITED` | `UNAUTHORIZED` | `UNKNOWN`
+
+```typescript
+import { useWorldStorage, WorldStorageError } from '@xrift/world-components'
+
+const storage = useWorldStorage()
+
+// Shared KV (one shared value per world)
+await storage.shared.set('event_phase', 'chapter-2')
+const phase = await storage.shared.get('event_phase')
+const visits = await storage.shared.increment('total_visits', 1)
+
+// Per-player KV (writes: own values only; reads: others allowed)
+await storage.player.set('coins', 340)
+const coins = await storage.player.get('coins')
+const otherScore = await storage.player.get('score', { userId })
+
+// Error handling
+try {
+  await storage.player.increment('coins', 10)
+} catch (e) {
+  if (e instanceof WorldStorageError && e.code === 'UNAUTHORIZED') {
+    // Guests cannot write
+  }
+}
+```
 
 ---
 

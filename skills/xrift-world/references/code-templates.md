@@ -595,3 +595,99 @@ export const SharedFileUploader = () => {
 ```
 
 **Note**: `uploadSharedFile` returns a `SharedFileInfo` object containing the `publicUrl` which can be used to display the uploaded file (e.g. as a texture on a 3D surface). The `onProgress` callback receives a percentage value (0-100).
+
+## Shared File Lock and Metadata (Persistent Exhibit)
+
+Attach a description / metadata at upload time (third argument of `uploadSharedFile`), then lock the file with `setSharedFileLock` to protect it from accidental deletion. Useful when a world persists `publicUrl` (e.g. in World Storage) and must keep the file available.
+
+```typescript
+import { useSharedFile } from '@xrift/world-components'
+import { useCallback } from 'react'
+
+export const useExhibitUpload = () => {
+  const { uploadSharedFile, setSharedFileLock, updateSharedFile } = useSharedFile()
+
+  const uploadExhibit = useCallback(
+    async (file: File) => {
+      // Upload with description and metadata
+      const result = await uploadSharedFile(file, undefined, {
+        description: 'Exhibit A',
+        metadata: { exhibit: 'pedestal-1' },
+      })
+      // Lock right after upload to prevent accidental deletion
+      await setSharedFileLock(result.id, true)
+      return result.publicUrl
+    },
+    [uploadSharedFile, setSharedFileLock],
+  )
+
+  const updateExhibitDescription = useCallback(
+    async (fileId: string, description: string) => {
+      // Locked files cannot be updated: unlock, update, then re-lock
+      await setSharedFileLock(fileId, false)
+      await updateSharedFile(fileId, { description })
+      await setSharedFileLock(fileId, true)
+    },
+    [setSharedFileLock, updateSharedFile],
+  )
+
+  return { uploadExhibit, updateExhibitDescription }
+}
+```
+
+**Note**: A locked file cannot be deleted, and `updateSharedFile` on it is rejected by the backend (`FILE_LOCKED`). Pass `null` for `description` / `metadata` in `updateSharedFile` to clear them.
+
+## World Storage (Persistent KV)
+
+Use `useWorldStorage` for data that must survive instance shutdowns: visit counters, per-player currency, rankings. Save at game-event milestones only — for per-frame sync use `useInstanceState`. Use `increment` (not `set`) for counters so concurrent additions are not lost.
+
+```typescript
+import { useWorldStorage, WorldStorageError, Interactable } from '@xrift/world-components'
+import { Text } from '@react-three/drei'
+import { useEffect, useState, useCallback } from 'react'
+
+export const VisitCounterAndCoins = () => {
+  const storage = useWorldStorage()
+  const [visits, setVisits] = useState<number | null>(null)
+  const [coins, setCoins] = useState<number | null>(null)
+
+  useEffect(() => {
+    // Shared KV: count up once on entry
+    storage.shared.increment('total_visits', 1).then(setVisits).catch(() => setVisits(null))
+    // Per-player KV: load own coins
+    storage.player.get('coins').then((v) => setCoins(typeof v === 'number' ? v : 0))
+  }, [storage])
+
+  const earnCoin = useCallback(async () => {
+    try {
+      const next = await storage.player.increment('coins', 1)
+      setCoins(next)
+    } catch (e) {
+      if (e instanceof WorldStorageError && e.code === 'UNAUTHORIZED') {
+        // Guests are read-only
+        return
+      }
+      throw e
+    }
+  }, [storage])
+
+  return (
+    <group>
+      <Text position={[0, 2, 0]} fontSize={0.15} color="white" anchorX="center">
+        {visits === null ? '...' : `Total visits: ${visits}`}
+      </Text>
+      <Interactable id="earn-coin" onInteract={earnCoin} interactionText="Earn Coin">
+        <mesh position={[0, 1, 0]}>
+          <cylinderGeometry args={[0.3, 0.3, 0.05, 24]} />
+          <meshStandardMaterial color="gold" />
+        </mesh>
+      </Interactable>
+      <Text position={[0, 1.5, 0]} fontSize={0.12} color="gold" anchorX="center">
+        {coins === null ? '' : `Coins: ${coins}`}
+      </Text>
+    </group>
+  )
+}
+```
+
+**Note**: Reads are public (no authentication required via API) — never store secrets. Limits: 10MB per world, 100KB per entry, 256 shared keys, 64 keys per user, 30 writes/min per user. Keys must match `/^[A-Za-z0-9_.\-:]{1,128}$/`.
