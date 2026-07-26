@@ -607,11 +607,12 @@ Screen share display component.
 | `rotation` | `[number, number, number]` | No | Rotation |
 | `width` | `number` | No | Width |
 | `targetFps` | `number` | No | Texture update FPS limit for low-spec devices (default: unlimited) |
+| `placeholderImageUrl` | `string` | No | Image URL shown while no screen is being shared (contain-fit; falls back to background color and guide text on load failure). The image is loaded as a WebGL texture, so the URL must allow CORS |
 
 ```typescript
 import { ScreenShareDisplay } from '@xrift/world-components'
 
-<ScreenShareDisplay id="screen-share" position={[0, 2, -3]} width={4} />
+<ScreenShareDisplay id="screen-share" position={[0, 2, -3]} width={4} placeholderImageUrl="https://example.com/placeholder.png" />
 ```
 
 ### Skybox
