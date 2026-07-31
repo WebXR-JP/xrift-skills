@@ -492,6 +492,49 @@ import { Interactable } from '@xrift/world-components'
 </Interactable>
 ```
 
+### Grabbable
+
+Declares an object as grabbable (explicit opt-in, like `Interactable`). Players grab it, float it in front of their view, and place it anywhere. Automatically sets `LAYERS.GRABBABLE` on child objects; the grabbing foundation is provided by the platform (and by `DevEnvironment` during development).
+
+`transform` and `onMove` use the parent's local coordinate space (same as a normal `position` prop); children are written relative to the origin. Nesting under a transformed parent works correctly — coordinates are converted to/from world space internally. On release, `onMove` returns the new pose — reflect it in state to update `transform`.
+
+**Props**:
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `id` | `string` | Yes | Unique identifier |
+| `transform` | `GrabbableTransform` | Yes | Current pose (position/rotation/scale). Applied to the root group |
+| `onMove` | `(transform: GrabResultTransform) => void` | Yes | Receives the new pose on release/commit |
+| `renderGhost` | `() => ReactNode` | No | Ghost (semi-transparent, no physics) shown while grabbing. Falls back to `children` if omitted |
+| `enabled` | `boolean` | No | Whether it is grabbable (default: true) |
+
+```typescript
+import { useState } from 'react'
+import { Grabbable, type GrabbableTransform } from '@xrift/world-components'
+
+function GrabbableBall() {
+  const [transform, setTransform] = useState<GrabbableTransform>({
+    position: { x: 2, y: 0.5, z: -2 },
+    rotation: { x: 0, y: 0, z: 0 },
+  })
+
+  return (
+    <Grabbable
+      id="ball"
+      transform={transform}
+      onMove={(next) => setTransform((prev) => ({ ...prev, ...next }))}
+    >
+      {/* children are in local coordinates */}
+      <mesh>
+        <sphereGeometry args={[0.3]} />
+        <meshStandardMaterial color="gold" />
+      </mesh>
+    </Grabbable>
+  )
+}
+```
+
+**Note**: If children include physics (e.g. `RigidBody`), provide a physics-free `renderGhost`. In `DevEnvironment`, press `G` to grab/place, mouse wheel to adjust distance, click to commit, `Esc` to cancel.
+
 ### SpawnPoint
 
 Player spawn location.
@@ -814,6 +857,7 @@ Three.js cameras and objects have 32 layers (0-31). A camera only renders object
 | `LAYERS.FIRST_PERSON_ONLY` | 9 | First-person view only (for VRM headless copy) |
 | `LAYERS.THIRD_PERSON_ONLY` | 10 | Third-person view only (for other players and mirrors) |
 | `LAYERS.INTERACTABLE` | 11 | Interactable objects (for Raycast detection) |
+| `LAYERS.GRABBABLE` | 14 | Grabbable objects (Raycast targets for `Grabbable`) |
 
 ```typescript
 import { LAYERS } from '@xrift/world-components'
@@ -821,6 +865,7 @@ import { LAYERS } from '@xrift/world-components'
 
 **How It Works**:
 - The `Interactable` component automatically sets `LAYERS.INTERACTABLE` on child objects
+- The `Grabbable` component automatically sets `LAYERS.GRABBABLE` on child objects
 - In production, the frontend performs Raycasts on the `LAYERS.INTERACTABLE` layer to detect interactions
 - In the dev environment (`dev.tsx`), you need to set the Raycaster layer to `LAYERS.INTERACTABLE` to test interactions
 

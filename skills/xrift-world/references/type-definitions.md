@@ -454,3 +454,20 @@ interface Rotation3D {
   z: number
 }
 ```
+
+## GrabbableTransform / GrabResultTransform
+
+Pose types for the `Grabbable` component. `transform` prop takes `GrabbableTransform`; `onMove` returns `GrabResultTransform`.
+
+```typescript
+interface GrabbableTransform {
+  position: { x: number; y: number; z: number }  // Parent-local coordinates (same as a normal position prop)
+  rotation: { x: number; y: number; z: number }  // Euler angles (radians)
+  scale?: number                                   // Uniform scale (defaults to 1)
+}
+
+interface GrabResultTransform {
+  position: { x: number; y: number; z: number }
+  rotation: { x: number; y: number; z: number }
+}
+```

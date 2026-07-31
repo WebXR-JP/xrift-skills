@@ -183,9 +183,10 @@ Run `npm run dev` to start the dev server. You can navigate and test the world i
 | Move | W / A / S / D |
 | Ascend / Descend | E or Space / Q |
 | Interact | Aim crosshair and click |
+| Grab / Place | G (aim at a `Grabbable` target); mouse wheel adjusts distance, Esc cancels |
 | Release mouse lock | ESC |
 
-`Interactable` component click behavior can also be tested in the dev environment (the center Raycaster detects the `LAYERS.INTERACTABLE` layer).
+`Interactable` component click behavior can also be tested in the dev environment (the center Raycaster detects the `LAYERS.INTERACTABLE` layer). Likewise, `Grabbable` can be tested (the center Raycaster detects the `LAYERS.GRABBABLE` layer).
 
 ### dev.tsx Structure
 
