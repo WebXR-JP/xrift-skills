@@ -462,6 +462,49 @@ try {
 
 ---
 
+### useServerClock(options?)
+
+Hook providing a clock (server time) that agrees across every device in the instance (±40ms measured). Device `Date.now()` values differ by 0.1 to several seconds, so use this for anything requiring "the same moment": countdowns, simultaneous effects, video playback alignment, periodic animations everyone sees in phase.
+
+**Arguments**: `options?.require: 'media' | 'motion'` — accuracy requirement, used to compute `trustworthy` (`media` = ±300ms for video/music alignment, `motion` = ±100ms for animations/effects)
+
+**Returns**:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `now` | `() => number` | Estimated server time (ms). **A function** — call from `useFrame` without re-rendering. Falls back to `Date.now()` before first sync |
+| `uncertainty` | `number` | Error upper bound (ms), including aging. `Infinity` before first sync |
+| `synced` | `boolean` | Whether sync is established. `false` while disconnected, but `now()` keeps returning the last estimate |
+| `trustworthy` | `boolean` | Whether the `require` accuracy is met (same as `synced` if omitted) |
+| `timeJumpCount` | `number` | Timeline jump count. Re-baseline delta-accumulating animations when it changes |
+| `lastTimeJumpMs` | `number` | Most recent jump (ms); negative = jumped backward |
+
+**Principles**:
+- Prefer **stateless** rendering: write positions as `f(now())` every frame. Zero networking, late joiners match instantly, and time jumps self-heal with no handling needed
+- Video sync: **never correct when the correction costs more than the error.** Dead band < 0.3s (and reset `playbackRate` to 1 inside it), absorb 0.3–5s via `playbackRate` ±5%, seek only when the target is already buffered, and give up (keep playing) when `trustworthy` is false
+- **Not for fairness-critical judgments** (buzzers, finish lines): asymmetric-path error is undetectable client-side and constant within a session, so the same person wins every time. Adjudicate on the server
+- In dev the default implementation is unsynced (`trustworthy` always false). Inject a fake via `<XRiftProvider serverClockImplementation={{ now: () => Date.now(), uncertainty: 10, synced: true, timeJumpCount: 0, lastTimeJumpMs: 0 }}>`
+- Requires `@xrift/world-components` >= 0.47.0
+
+```typescript
+import { useServerClock } from '@xrift/world-components'
+import { useFrame } from '@react-three/fiber'
+
+// Everyone sees the same phase (stateless — no sync logic at all)
+const { now } = useServerClock()
+useFrame(() => {
+  mesh.current.position.y = 1 + Math.sin(now() / 1000) * 0.5
+})
+
+// Gate on accuracy for media alignment
+const clock = useServerClock({ require: 'media' })
+if (clock.trustworthy) {
+  const target = ((clock.now() - epoch) / 1000) % duration
+}
+```
+
+---
+
 ## Components
 
 ### Interactable

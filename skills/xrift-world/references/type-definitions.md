@@ -454,3 +454,23 @@ interface Rotation3D {
   z: number
 }
 ```
+
+
+## ServerClockAccuracy / UseServerClockResult
+
+Instance-wide shared clock (server time). Retrieved via the `useServerClock()` hook.
+
+```typescript
+type ServerClockAccuracy = 'media' | 'motion'
+// media  = ±300ms (video / music playback alignment)
+// motion = ±100ms (periodic animations, simultaneous effects)
+
+interface UseServerClockResult {
+  now: () => number         // Estimated server time (ms). A function — call from useFrame without re-render. Falls back to Date.now() before first sync
+  uncertainty: number       // Error upper bound (ms), including aging over time. Infinity before first sync
+  synced: boolean           // Whether sync is established. false while disconnected (now() keeps returning the last estimate)
+  trustworthy: boolean      // Whether the accuracy required via options.require is met (same as synced if omitted)
+  timeJumpCount: number     // Timeline jump count. Re-baseline delta-accumulating animations when this changes
+  lastTimeJumpMs: number    // Most recent jump (ms); negative = jumped backward
+}
+```
