@@ -700,3 +700,66 @@ export const VisitCounterAndCoins = () => {
 ```
 
 **Note**: Reads are public (no authentication required via API) — never store secrets. Limits: 10MB per world, 100KB per entry, 256 shared keys, 64 keys per user, 30 writes/min per user. Keys must match `/^[A-Za-z0-9_.\-:]{1,128}$/`.
+
+
+## Synchronized Animation with Server Clock (useServerClock)
+
+Positions written as a function of server time agree on every device with zero networking. Late joiners match instantly, and clock jumps self-heal.
+
+```tsx
+import { useServerClock } from '@xrift/world-components'
+import { useFrame } from '@react-three/fiber'
+import { useRef } from 'react'
+import type { Mesh } from 'three'
+
+export const SyncedPendulum = () => {
+  const { now } = useServerClock()
+  const mesh = useRef<Mesh>(null)
+
+  useFrame(() => {
+    if (!mesh.current) return
+    // Stateless: everything derives from the shared time — no sync logic needed
+    mesh.current.rotation.z = Math.sin(now() / 800) * 0.4
+    mesh.current.position.y = 2 + Math.sin(now() / 1000) * 0.5
+  })
+
+  return (
+    <mesh ref={mesh}>
+      <boxGeometry args={[0.2, 1.5, 0.2]} />
+      <meshStandardMaterial color="orange" />
+    </mesh>
+  )
+}
+```
+
+## Synchronized Countdown with Server Clock
+
+```tsx
+import { useServerClock } from '@xrift/world-components'
+import { useFrame } from '@react-three/fiber'
+import { Text } from '@react-three/drei'
+import { useState } from 'react'
+
+// Everyone sees the same number flip at the same moment
+export const Countdown = ({ targetEpochMs }: { targetEpochMs: number }) => {
+  const { now, synced } = useServerClock()
+  const [label, setLabel] = useState('--')
+
+  useFrame(() => {
+    const remain = Math.max(0, Math.ceil((targetEpochMs - now()) / 1000))
+    const next = synced ? String(remain) : '--' // do not pretend while unsynced
+    if (next !== label) setLabel(next)
+  })
+
+  return (
+    <Text position={[0, 2, 0]} fontSize={0.5} color="white">
+      {label}
+    </Text>
+  )
+}
+```
+
+Notes:
+- `now` is a function; calling it in `useFrame` causes no re-renders
+- For video playback alignment, gate on `useServerClock({ require: 'media' }).trustworthy` and never seek outside the buffered range (see API Reference)
+- Not for fairness-critical judgments (buzzers / finish lines) — adjudicate server-side
