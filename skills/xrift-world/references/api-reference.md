@@ -375,21 +375,43 @@ await deleteSharedFile(fileId)
 
 ### useItem()
 
-Hook for getting the unique ID of a placed item. Each placement gets a different ID, even for the same item type.
+Hook for getting information about a placed item. Each placement gets a different ID, even for the same item type.
 
-**Returns**: `{ id: string }`
+**Returns**: `{ id: string, placedBy: ItemPlacer | null }`
 
 | Property | Type | Description |
 |----------|------|-------------|
 | `id` | `string` | Unique placement ID (UUID) |
+| `placedBy` | `ItemPlacer \| null` | Who placed this item. `null` when the placer cannot be identified |
+
+**ItemPlacer**:
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | The placer's userId. Always present (resolved by the server) |
+| `displayName` | `string \| null` | Display name. `null` if the profile cannot be resolved (e.g. they left the instance) |
+| `avatarUrl` | `string \| null` | Icon URL. `null` if it cannot be resolved |
+| `isLocalUser` | `boolean` | Whether the local user placed it |
 
 ```typescript
 import { useItem, useInstanceState } from '@xrift/world-components'
 
-const { id } = useItem()
+const { id, placedBy } = useItem()
+
 // Use id to scope per-placement state
 const [votes, setVotes] = useInstanceState(`votes-${id}`, 0)
+
+// Only the person who placed it can reset the votes
+if (placedBy?.isLocalUser) {
+  // show a reset button
+}
 ```
+
+> `displayName` and `avatarUrl` are resolved on demand, so they become `null` once the placer
+> leaves the instance. `id` always stays, so use it when you need a stable key.
+
+> While the item is still a placement preview (before it is confirmed), `placedBy` is the local user.
+
+> Requires `@xrift/world-components` >= 0.49.0
 
 > Must be used within ItemProvider (automatically provided by the platform).
 
@@ -534,6 +556,105 @@ import { Interactable } from '@xrift/world-components'
   </mesh>
 </Interactable>
 ```
+
+### Grabbable
+
+Declares an object as grabbable. Players can grab it, float it in front of their view, and place
+it somewhere else. Child meshes are put on `LAYERS.GRABBABLE` (layer 14); the grabbing foundation
+(raycasting, carrying, committing) is provided by the platform, and `DevEnvironment` includes a
+system so you can test it while developing.
+
+`transform` and `onMove` use the **local space of the parent** you place the `Grabbable` in (the
+same space as a normal `position` prop). Nesting it under a transformed parent group is safe — the
+conversion to and from world space happens internally, so the release position never drifts.
+
+**Props**:
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `id` | `string` | Yes | Unique identifier |
+| `transform` | `GrabbableTransform` | Yes | Current pose, in the parent's local space. Applied to the root group, so write children around the origin |
+| `onMove` | `(transform: GrabResultTransform) => void` | Yes | Called when the player releases it. Returns the same local space as `transform`, so store it in state and feed it back |
+| `renderGhost` | `() => ReactNode` | No | Ghost shown while carrying (semi-transparent, no physics). Defaults to reusing `children` |
+| `enabled` | `boolean` | No | Whether it can be grabbed (default: true) |
+
+```typescript
+import { useState } from 'react'
+import { Grabbable, type GrabbableTransform } from '@xrift/world-components'
+
+function GrabbableBall() {
+  const [transform, setTransform] = useState<GrabbableTransform>({
+    position: { x: 2, y: 0.5, z: -2 },
+    rotation: { x: 0, y: 0, z: 0 },
+  })
+
+  return (
+    <Grabbable
+      id="ball"
+      transform={transform}
+      onMove={(next) => setTransform((prev) => ({ ...prev, ...next }))}
+    >
+      {/* children are written around the origin */}
+      <mesh>
+        <sphereGeometry args={[0.3]} />
+        <meshStandardMaterial color="gold" />
+      </mesh>
+    </Grabbable>
+  )
+}
+```
+
+> **If children contain physics** (`RigidBody` etc.), you must pass a physics-free `renderGhost`.
+> Otherwise `children` is reused as the ghost and the colliders overlap while carrying.
+
+> Grabbing assumes desktop (pointer lock + center crosshair). In `DevEnvironment`: **G** to grab
+> and place, mouse wheel to adjust distance, click to confirm, **Esc** to cancel.
+
+### Seat
+
+Declares an object as sittable. When a player sits, their view, pose, and body orientation follow
+the seat; they stand up with **Space** (the A button in VR).
+
+Place `Seat` as a group: **its origin is the seating surface (where the hips go) and its forward
+direction is -Z**. Write children in coordinates relative to that surface.
+
+The surface transform is derived from the **world matrix of wherever you placed the `Seat`, every
+frame**. Nesting it under a moving vehicle, a turntable, or a tilted group just works — the player
+follows along. You never pass the transform yourself.
+
+**Props** (group properties such as `position` and `rotation` can be passed directly; `scale` cannot):
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `id` | `string` | Yes | Unique identifier |
+| `exitOffset` | `SeatExitOffset` | No | Where the player is placed on standing up (default: `{ forward: 0.6, right: 0, up: 0 }`) |
+| `interactionText` | `string` | No | Text shown when aiming at the seat (default: `'座る'`) |
+| `enabled` | `boolean` | No | Whether it can be used (default: true). Disabled automatically while someone else is seated |
+
+```typescript
+import { Seat } from '@xrift/world-components'
+
+const height = 0.45
+
+// Place the Seat at the height of the seating surface
+<Seat id="stool-1" position={[2, height, -3]} rotation={[0, Math.PI / 2, 0]}>
+  {/* children are relative to the surface, so drop the box by half its height */}
+  <mesh position={[0, -height / 2, 0]}>
+    <boxGeometry args={[0.5, height, 0.5]} />
+    <meshStandardMaterial color="saddlebrown" />
+  </mesh>
+</Seat>
+```
+
+> **Put the `Seat` at the surface height, not on the floor.** Aligning its origin with the floor
+> makes players sit sunk into the ground.
+
+> `scale` is not accepted. The surface is defined by position and orientation alone, and seated hip
+> and eye heights come from the player's own avatar. Scale the `children` instead. If an ancestor
+> group is scaled, the surface is still correct but `exitOffset` distances stay in world meters.
+
+> Sitting requires an avatar, a camera, and physics, so the platform provides that part. In
+> `DevEnvironment` the seat is only registered; clicking it does nothing.
+
+> Requires `@xrift/world-components` >= 0.50.0
 
 ### SpawnPoint
 
@@ -680,6 +801,12 @@ import { Skybox } from '@xrift/world-components'
 
 Low-level video screen without UI controls. Use `VideoPlayer` for a full-featured player.
 
+With `sync='global'` (the default), playback is kept in sync across the instance using an
+**anchor**: the synced state carries `currentTime` together with `serverTime`, meaning "at server
+time `serverTime`, the playback position was `currentTime`". Each client computes its own target
+position from that, so **someone who joins later catches up with no extra communication**. Small
+drift is corrected by nudging playback speed rather than seeking, so viewers rarely see a jump.
+
 **Props**:
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
@@ -699,6 +826,13 @@ import { VideoScreen } from '@xrift/world-components'
 
 <VideoScreen id="bg-video" url="https://example.com/video.mp4" scale={[4, 2.25]} />
 ```
+
+> If you write the synced state yourself instead of letting `VideoScreen` manage it, stamp
+> `serverTime` with the shared clock (`useServerClock`), never `Date.now()`. Device clocks differ
+> from each other by 0.1 to several seconds (a Quest was measured 0.66s off), and the anchor would
+> place everyone at a different position.
+
+> Anchor-based catch-up requires `@xrift/world-components` >= 0.48.0
 
 ### LiveVideoPlayer
 
