@@ -344,18 +344,76 @@ interface Tag {
 }
 ```
 
+## GrabbableTransform / GrabResultTransform
+
+Pose of a `Grabbable` object. Both are in the **local space of the parent** you placed the
+`Grabbable` in (the same space as a normal `position` prop).
+
+```typescript
+interface GrabbableTransform {
+  position: { x: number; y: number; z: number }
+  rotation: { x: number; y: number; z: number }  // Euler angles in radians
+  scale?: number                                  // uniform scale (default: 1)
+}
+
+interface GrabResultTransform {
+  position: { x: number; y: number; z: number }
+  rotation: { x: number; y: number; z: number }
+}
+```
+
+## SeatExitOffset
+
+Where a player is placed when they stand up from a `Seat`. Distances are in **world meters**, so
+they are not affected by a scaled ancestor group.
+
+```typescript
+interface SeatExitOffset {
+  forward?: number  // toward the seat's front (-Z). Default 0.6
+  right?: number    // to the seat's right. Default 0
+  up?: number       // along world up. Default 0
+}
+```
+
+`forward` and `right` are rotated by the seat's **horizontal facing (yaw) only**. `up` is world up:
+using the seat's own up axis would bury the player in the ground when they leave a vehicle that is
+upside down mid-loop.
+
+## ItemPlacer
+
+Who placed an item (`useItem().placedBy`).
+
+```typescript
+interface ItemPlacer {
+  id: string                  // the placer's userId (always present)
+  displayName: string | null  // null if the profile cannot be resolved
+  avatarUrl: string | null    // null if it cannot be resolved
+  isLocalUser: boolean
+}
+```
+
+`displayName` and `avatarUrl` are resolved on demand, so they become `null` once the placer leaves
+the instance. Use `id` when you need a stable key.
+
 ## VideoState
 
 Video screen synchronized state (used internally by `VideoScreen`).
+
+`currentTime` and `serverTime` form an **anchor**: "at server time `serverTime`, the playback
+position was `currentTime`". Each client computes its own target position from that, so someone who
+joins later catches up with no extra communication.
 
 ```typescript
 interface VideoState {
   url: string
   isPlaying: boolean
-  currentTime: number
-  serverTime: number
+  currentTime: number  // playback position at the anchor (seconds)
+  serverTime: number   // the anchor's server time (ms), from useServerClock
 }
 ```
+
+> Stamp `serverTime` with the shared clock (`useServerClock`), never `Date.now()`. Device clocks
+> differ from each other by 0.1 to several seconds.
 
 ## LogEntry
 
