@@ -362,6 +362,32 @@ interface GrabResultTransform {
 }
 ```
 
+## SeatOccupant
+
+Who is sitting in a `Seat` (passed to `onEnter` / `onLeave`).
+
+```typescript
+interface SeatOccupant {
+  id: string            // the player's userId
+  isLocalUser: boolean  // whether it is the local player
+}
+```
+
+No display name or icon — look them up from `useUsers()` by `id` if you need them.
+
+## SeatControlInput
+
+Steering input for a driver seat (passed to `onControlInput`).
+
+```typescript
+interface SeatControlInput {
+  forward: number  // forward +1, backward -1 (W / S)
+  right: number    // right +1, left -1 (D / A)
+}
+```
+
+These express **which way the player wants to move**, not how far. A car reads `right` as steering; a hovercraft may read it as strafing.
+
 ## SeatExitOffset
 
 Where a player is placed when they stand up from a `Seat`. Distances are in **world meters**, so
