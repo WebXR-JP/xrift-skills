@@ -189,8 +189,8 @@ Run `npm run dev` to start the dev server. You can navigate and test the world i
 Raycaster detects the `LAYERS.INTERACTABLE` layer). `Grabbable` works too — **G** to grab and
 place, mouse wheel to adjust distance, click to confirm.
 
-`Seat` only registers itself in the dev environment; sitting requires an avatar, a camera, and
-physics, so it does nothing until the world runs on XRift.
+`Seat` and `Vehicle` only register themselves in the dev environment; sitting requires an avatar, a
+camera, and physics, so they do nothing until the world runs on XRift.
 
 ### dev.tsx Structure
 

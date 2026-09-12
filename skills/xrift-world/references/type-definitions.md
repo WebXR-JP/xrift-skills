@@ -388,6 +388,25 @@ interface SeatControlInput {
 
 These express **which way the player wants to move**, not how far. A car reads `right` as steering; a hovercraft may read it as strafing.
 
+Delivered to `Vehicle`'s `onDrive` for a driver seat, and to `Seat`'s `onControlInput` for seats
+that are not vehicles.
+
+## VehiclePose
+
+Where a vehicle is (`Vehicle`'s synced transform). You do not construct this yourself — it is what
+XRift sends and applies for you.
+
+```typescript
+interface VehiclePose {
+  position: { x: number; y: number; z: number }
+  quaternion: { x: number; y: number; z: number; w: number }
+}
+```
+
+**This is the pose relative to the parent, not a world pose** — the same frame `onDrive` writes in,
+so a vehicle parented under a moving platform is not double-transformed. It is a quaternion rather
+than a yaw so that slopes, banking, and loops survive the trip.
+
 ## SeatExitOffset
 
 Where a player is placed when they stand up from a `Seat`. Distances are in **world meters**, so
