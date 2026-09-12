@@ -628,6 +628,9 @@ follows along. You never pass the transform yourself.
 | `exitOffset` | `SeatExitOffset` | No | Where the player is placed on standing up (default: `{ forward: 0.6, right: 0, up: 0 }`) |
 | `interactionText` | `string` | No | Text shown when aiming at the seat (default: `'座る'`) |
 | `enabled` | `boolean` | No | Whether it can be used (default: true). Disabled automatically while someone else is seated |
+| `onEnter` | `(occupant: SeatOccupant) => void` | No | Called when someone sits down (yourself or anyone else) |
+| `onLeave` | `(occupant: SeatOccupant) => void` | No | Called when someone stands up (yourself or anyone else) |
+| `onControlInput` | `(input: SeatControlInput, delta: number) => void` | No | Steering input. Passing it makes the seat a **driver seat** |
 
 ```typescript
 import { Seat } from '@xrift/world-components'
@@ -655,6 +658,35 @@ const height = 0.45
 > `DevEnvironment` the seat is only registered; clicking it does nothing.
 
 > Requires `@xrift/world-components` >= 0.50.0
+
+**Making a vehicle** (>= 0.51.0): pass `onControlInput`. It fires every frame, **only while the local player is the one sitting in that seat**.
+
+```typescript
+const TURN_RATE = 1.5  // rad/s
+const MAX_SPEED = 4    // m/s
+
+<Seat
+  id="cart-driver"
+  position={[0, 0.5, 0]}
+  onControlInput={(input, delta) => {
+    // A/D steers (increasing yaw turns left)
+    yaw.current -= input.right * TURN_RATE * delta
+    // W/S drives; the heading comes from the current yaw
+    const step = input.forward * MAX_SPEED * delta
+    pos.current.x -= Math.sin(yaw.current) * step
+    pos.current.z -= Math.cos(yaw.current) * step
+  }}
+  onLeave={() => { /* the driver got off - bring it to a stop */ }}
+>
+  {/* the seat's hit box */}
+</Seat>
+```
+
+`SeatControlInput` gives you **which way the player wants to move**, not how far. Whether `right` means steering or strafing is for your vehicle to decide.
+
+> **Prefer this over raw `keydown` listeners.** It arrives the same way in VR and on mobile (thumbsticks, virtual joystick), and it is limited to the driver — with raw keys, someone who is not aboard can press W and move the vehicle on their own screen, drifting out of sync with everyone else.
+
+> **Only the driver's client simulates.** On everyone else's screen the vehicle's position is reproduced from the driver's position; XRift does not run physics on every client and reconcile them. Hold vehicle state as **local state on the driver's client** — do not sync it with `useInstanceState`.
 
 ### SpawnPoint
 
