@@ -655,8 +655,9 @@ const height = 0.45
 > and eye heights come from the player's own avatar. Scale the `children` instead. If an ancestor
 > group is scaled, the surface is still correct but `exitOffset` distances stay in world meters.
 
-> Sitting requires an avatar, a camera, and physics, so the platform provides that part. In
-> `DevEnvironment` the seat is only registered; clicking it does nothing.
+> `DevEnvironment` (0.53.0+) bundles a single-player seat system, so you can sit and try it
+> during development: aim at a seat and click to sit, **Space** to stand up. Sitting in a `Vehicle`
+> driver's seat lets you drive it with WASD.
 
 > Requires `@xrift/world-components` >= 0.50.0
 
@@ -1031,7 +1032,7 @@ import { Video180Sphere } from '@xrift/world-components'
 
 ### DevEnvironment
 
-Development environment wrapper. Provides physics, camera, crosshair, and first-person navigation. Not needed in production.
+Development environment wrapper. Provides physics, camera, crosshair, first-person navigation, and a single-player seat system (sit on `Seat` targets, drive `Vehicle` from the driver's seat). Not needed in production.
 
 **Props**:
 | Prop | Type | Required | Description |
