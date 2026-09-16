@@ -468,12 +468,12 @@ Entry log record for `EntryLogBoard`.
 type LogType = 'join' | 'leave'
 
 interface LogEntry {
-  id: string
+  id: string  // unique ID from writer + shared-clock time
   type: LogType
   userId: string
   displayName: string
   avatarUrl: string | null
-  timestamp: string  // Formatted timestamp
+  timestamp: number  // epoch ms (shared clock, format at render time)
 }
 ```
 

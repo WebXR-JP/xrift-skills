@@ -786,6 +786,7 @@ Reflective surface component.
 | `color` | `number` | No | Reflection color (default: 0xcccccc) |
 | `textureResolution` | `number` | No | Texture resolution |
 | `lodDistance` | `number` | No | Distance in meters to switch to envMap-based pseudo-mirror (default: 10) |
+| `reflectionInterval` | `number` | No | Reflection texture update interval (once every N frames, default: 2) |
 
 ```typescript
 import { Mirror } from '@xrift/world-components'
@@ -1062,7 +1063,7 @@ Displays a log of user join/leave events.
 |------|------|----------|-------------|
 | `stateNamespace` | `string` | No | Instance state key for multi-board identification |
 | `maxEntries` | `number` | No | Maximum display entries |
-| `formatTimestamp` | `(date: Date) => string` | No | Timestamp format function |
+| `formatTimestamp` | `(timestampMs: number) => string` | No | Timestamp format function (receives epoch ms) |
 | `displayNameFallback` | `string` | No | Fallback when display name unavailable |
 | `labels` | `Partial<Labels>` | No | Customize join/leave labels |
 | `colors` | `Partial<Colors>` | No | Customize colors |
