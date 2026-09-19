@@ -22,6 +22,14 @@ A guide for building WebXR worlds on the XRift platform.
 - **references/code-templates.md** - Code templates for GLB models, textures, Skybox, interactions, and more
 - **references/type-definitions.md** - Type definitions for User, PlayerMovement, VRTrackingData, etc.
 
+### xrift-world-editing
+
+A guide for editing XRift worlds from the browser through WebMCP. While the user is inside an
+instance on `app.xrift.net`, an AI agent calls the tools the page exposes.
+
+- **SKILL.md** - Where the tools exist, coordinate and rotation conventions, limits, and the rules that keep the agent out of the user's way
+- **references/tool-reference.md** - Input/output schema for all eight tools, placeable types, and error messages
+
 ## Updating
 
 To update installed skills to the latest version:
