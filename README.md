@@ -22,6 +22,15 @@ XRift プラットフォーム用 WebXR ワールド制作ガイド。
 - **references/code-templates.md** - GLB モデル、テクスチャ、Skybox、インタラクション等のコードテンプレート
 - **references/type-definitions.md** - User, PlayerMovement, VRTrackingData 等の型定義
 
+### xrift-sdk
+
+`@xrift/sdk` でワールド・アイテムをプログラムからアップロードするためのガイド。
+
+- **SKILL.md** - 最重要ルール、XriftClient の初期化、アップロードの流れ、エラー処理
+- **references/api-reference.md** - XriftClient, WorldsApi, ItemsApi, エラークラス, ユーティリティの全仕様
+- **references/code-templates.md** - Node.js・ブラウザ環境それぞれのコード例
+- **references/type-definitions.md** - SDK の全インターフェースの型定義
+
 ### xrift-world-editing
 
 ブラウザから WebMCP 経由で XRift のワールドを編集するためのガイド。

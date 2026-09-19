@@ -22,6 +22,15 @@ A guide for building WebXR worlds on the XRift platform.
 - **references/code-templates.md** - Code templates for GLB models, textures, Skybox, interactions, and more
 - **references/type-definitions.md** - Type definitions for User, PlayerMovement, VRTrackingData, etc.
 
+### xrift-sdk
+
+A guide for programmatically uploading worlds and items with `@xrift/sdk`.
+
+- **SKILL.md** - Critical rules, XriftClient initialization, upload flows, error handling
+- **references/api-reference.md** - Full specification of XriftClient, WorldsApi, ItemsApi, error classes, and utility functions
+- **references/code-templates.md** - Code examples for Node.js and browser environments
+- **references/type-definitions.md** - Complete type definitions for all SDK interfaces
+
 ### xrift-world-editing
 
 A guide for editing XRift worlds from the browser through WebMCP. While the user is inside an
