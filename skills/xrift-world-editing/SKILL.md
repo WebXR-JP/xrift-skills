@@ -15,22 +15,26 @@ tools the page registers while the user is inside an instance they can edit.
 ## Critical Rules
 
 1. **Call `get-viewer-context` before placing anything relative to the user.** It returns
-   `viewDirection` (a unit vector) and `crosshairSurface`. Never guess where the user is looking.
-2. **Never convert direction into an angle yourself.** To place something N meters in front of
+   `viewDirection` (a unit vector), `crosshairSurface` and `playerPosition`. Never guess where the
+   user is or what they are looking at.
+2. **`crosshairSurface` can be `null`; `playerPosition` effectively cannot.** Looking at the sky or
+   at nothing within range leaves no surface, and `anchor: 'crosshair'` then fails. Fall back to
+   `anchor: 'player'`, which is the user's **feet**, so `y: 0` sits on the ground they stand on.
+3. **Never convert direction into an angle yourself.** To place something N meters in front of
    the user, add `viewDirection * N` to the position. To make an object face the user, use
    `rotationDegreesToFaceViewer` as `rotationDegrees.y` verbatim. These differ by 180° — mixing
    them up puts objects behind the user, facing away.
-3. **Rotation is in degrees, position is in meters.** One unit is one meter. Do not send radians.
-4. **Call `list-placeable-types` before the first `place-objects`.** Type names and the valid
+4. **Rotation is in degrees, position is in meters.** One unit is one meter. Do not send radians.
+5. **Call `list-placeable-types` before the first `place-objects`.** Type names and the valid
    range of each dimension come from there, not from memory.
-5. **One call, many objects.** `place-objects` takes up to 50 objects. Placing a 15-part bench
+6. **One call, many objects.** `place-objects` takes up to 50 objects. Placing a 15-part bench
    in one call is one undo step for the user; 15 calls are 15 steps.
-6. **If a call fails, nothing was placed.** Validation is all-or-nothing. Fix the arguments from
+7. **If a call fails, nothing was placed.** Validation is all-or-nothing. Fix the arguments from
    the error message and call again — do not assume a partial result and try to patch it up.
-7. **Never fight the user for control.** Tools refuse while the user is placing or moving an
+8. **Never fight the user for control.** Tools refuse while the user is placing or moving an
    object, or answering a confirmation dialog. When refused, say so and wait; do not retry in a
    loop.
-8. **Re-read before editing.** `update-objects` and `remove-objects` take ids from `get-scene`.
+9. **Re-read before editing.** `update-objects` and `remove-objects` take ids from `get-scene`.
    Other people are editing the same world concurrently, so ids go stale.
 
 ## Where the tools exist
@@ -55,7 +59,8 @@ Right-handed, Y up, one unit = one meter.
 |---|---|
 | Absolute position | `anchor: 'world'` — position is from the world origin |
 | Relative to the user's gaze | `anchor: 'crosshair'` — position is from the surface under the crosshair |
-| "N meters in front of the user" | `crosshairSurface.position` (or the user's spot) + `viewDirection * N` |
+| Relative to where the user stands | `anchor: 'player'` — position is from their feet |
+| "N meters in front of the user" | `anchor: 'player'` with `position = viewDirection * N` |
 | "Facing the user" | `rotationDegrees.y = rotationDegreesToFaceViewer` |
 
 `get-scene` always reports **world** coordinates, even for objects inside a group. When you feed

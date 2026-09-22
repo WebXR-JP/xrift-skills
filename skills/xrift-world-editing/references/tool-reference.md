@@ -114,6 +114,7 @@ No input. Returns where the user is looking and how much room is left.
     "position": { "x": 0, "y": 0, "z": -2 },
     "normal": { "x": 0, "y": 1, "z": 0 }
   },
+  "playerPosition": { "x": 0, "y": 0, "z": 0 },
   "viewDirection": { "x": 0, "z": -1 },
   "rotationDegreesToFaceViewer": 180,
   "remainingCapacity": 458
@@ -122,6 +123,8 @@ No input. Returns where the user is looking and how much room is left.
 
 - `crosshairSurface` — the surface under the crosshair, and the origin for `anchor: 'crosshair'`.
   `null` when the user is not pointing at anything
+- `playerPosition` — where the user is standing, at their **feet**, and the origin for
+  `anchor: 'player'`. `null` only in the moment right after entering, before physics starts
 - `viewDirection` — horizontal unit vector the user is facing. **To place something N meters
   ahead, add this times N.** `null` until the direction has been measured
 - `rotationDegreesToFaceViewer` — put this in `rotationDegrees.y` to make an object face the
@@ -139,7 +142,7 @@ refuses while the user is answering a confirmation dialog.
 
 | field | type | meaning |
 |---|---|---|
-| `anchor` | `'world' \| 'crosshair'` | Reference for `position`. Default `world` |
+| `anchor` | `'world' \| 'crosshair' \| 'player'` | Reference for `position`. Default `world` |
 | `objects` | array (1–50) | The objects to place |
 
 Each entry:
