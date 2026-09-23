@@ -786,7 +786,6 @@ Reflective surface component.
 | `color` | `number` | No | Reflection color (default: 0xcccccc) |
 | `textureResolution` | `number` | No | Texture resolution |
 | `lodDistance` | `number` | No | Distance in meters to switch to envMap-based pseudo-mirror (default: 10) |
-| `reflectionInterval` | `number` | No | Reflection texture update interval (once every N frames, default: 2) |
 
 ```typescript
 import { Mirror } from '@xrift/world-components'
