@@ -199,8 +199,7 @@ No input. Returns where the user is looking and how much room is left.
 
 ## Write tools
 
-All write tools refuse while the user is placing or moving an object. `remove-objects` also
-refuses while the user is answering a confirmation dialog.
+All write tools refuse while the user is placing or moving an object.
 
 ### `place-objects`
 
@@ -257,9 +256,9 @@ one.
 |---|---|
 | `ids` | 1–50 ids to remove. A group takes its contents with it |
 
-The user is asked to confirm when the deletion pulls in group contents or covers many objects,
-so the call may not return until they answer. If they decline you get
-`ユーザーが削除をキャンセルしました` (the user canceled the deletion).
+There is no confirmation: objects are removed immediately, group contents and all. The user
+can bring them back with `Cmd/Ctrl+Z` (or you with `undo-last-agent-edit`), so remove only what
+was asked for and say how many went.
 
 The result separates two reasons an id did not go away, and you should keep them separate when
 reporting: **already gone** (re-read with `get-scene`) versus **being edited by someone else**
@@ -297,7 +296,6 @@ fix the arguments, and call again.
 | Message (JA) | Meaning | What to do |
 |---|---|---|
 | `ユーザーが配置・移動の操作中です` | The user is placing or moving something | Wait; tell the user |
-| `ユーザーが確認ダイアログに応答中です` | A confirmation dialog is open | Wait |
 | `ツールは解除されています（インスタンスを離れました）` | The user left the instance | Stop; the tools are gone |
 | `objects に ... が2回出てきます` | The same id appears twice in one `update-objects` call | Merge them into one entry |
 | `... は他の人が編集中です` | An `update-objects` target is locked | Drop that id and retry the rest |
@@ -306,7 +304,6 @@ fix the arguments, and call again.
 | `... に ... は指定できません` | The type does not accept that field | Check `extraFields` / `colorable` / `tiltable` |
 | `...は y が ... より下には置けません` | A sit area or spawn point would be below the fall threshold | Place it on a surface |
 | `オブジェクト数が上限に達しています` | The world hit 500 objects | Check `remainingCapacity`, ask the user what to remove |
-| `ユーザーが削除をキャンセルしました` | The user declined the deletion | Accept it; do not ask again |
 | `既に存在しない N 個` | Ids are stale | Re-run `get-scene` |
 | `他の人が編集中の N 個` | Someone else has them selected | Leave them; report to the user |
 | `取り消せる変更がありません` | Nothing in the undo history | Nothing to do |
