@@ -32,8 +32,7 @@ tools the page registers while the user is inside an instance they can edit.
 7. **If a call fails, nothing was placed.** Validation is all-or-nothing. Fix the arguments from
    the error message and call again — do not assume a partial result and try to patch it up.
 8. **Never fight the user for control.** Tools refuse while the user is placing or moving an
-   object, or answering a confirmation dialog. When refused, say so and wait; do not retry in a
-   loop.
+   object. When refused, say so and wait; do not retry in a loop.
 9. **Re-read before editing.** `update-objects` and `remove-objects` take ids from `get-scene`.
    Other people are editing the same world concurrently, so ids go stale.
 10. **Images come from `list-world-images`, never from a URL.** Pass the image's `id` as
