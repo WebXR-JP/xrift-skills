@@ -1,6 +1,6 @@
 ---
 name: xrift-world-editing
-description: Guide for editing XRift worlds from the browser through WebMCP tools. Covers the eight tools exposed on app.xrift.net (place, update, remove, group, undo, and three read tools), the coordinate and rotation conventions, placement anchors, limits, and the rules that keep the agent from disrupting the human user.
+description: Guide for editing XRift worlds from the browser through WebMCP tools. Covers the nine tools exposed on app.xrift.net (place, update, remove, group, undo, and four read tools), the coordinate and rotation conventions, placement anchors, limits, and the rules that keep the agent from disrupting the human user.
 ---
 
 # XRift World Editing via WebMCP
@@ -10,7 +10,7 @@ tools the page registers while the user is inside an instance they can edit.
 
 ## References
 
-- [Tool Reference](references/tool-reference.md) - Full input/output schema for all eight tools, placeable types, and error messages
+- [Tool Reference](references/tool-reference.md) - Full input/output schema for all nine tools, placeable types, and error messages
 
 ## Critical Rules
 
@@ -36,6 +36,12 @@ tools the page registers while the user is inside an instance they can edit.
    loop.
 9. **Re-read before editing.** `update-objects` and `remove-objects` take ids from `get-scene`.
    Other people are editing the same world concurrently, so ids go stale.
+10. **Images come from `list-world-images`, never from a URL.** Pass the image's `id` as
+    `imageAssetId`. There is no way to show an image from another site; if the one the user
+    wants is not listed, ask them to upload it from Asset Management in edit mode.
+11. **A world has at most one spawn point.** If `get-scene` with `type: 'spawn-point'` returns
+    one, move it with `update-objects` instead of placing another. Put it (and sit areas) on
+    solid ground — use `anchor: 'crosshair'` or `'player'` so it sits on a real surface.
 
 ## Where the tools exist
 
