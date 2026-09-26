@@ -31,14 +31,6 @@ XRift プラットフォーム用 WebXR ワールド制作ガイド。
 - **references/code-templates.md** - Node.js・ブラウザ環境それぞれのコード例
 - **references/type-definitions.md** - SDK の全インターフェースの型定義
 
-### xrift-world-editing
-
-ブラウザから WebMCP 経由で XRift のワールドを編集するためのガイド。
-`app.xrift.net` でインスタンスに入っているあいだ、ページが公開するツールを AI が呼ぶ。
-
-- **SKILL.md** - ツールが生える条件、座標・回転の規約、上限、ユーザーの操作を邪魔しないための決まり
-- **references/tool-reference.md** - 9本のツールの入出力スキーマ、置ける種別、エラーメッセージ
-
 ## 更新
 
 インストール済みのスキルを最新版に更新するには：

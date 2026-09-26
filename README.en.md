@@ -31,14 +31,6 @@ A guide for programmatically uploading worlds and items with `@xrift/sdk`.
 - **references/code-templates.md** - Code examples for Node.js and browser environments
 - **references/type-definitions.md** - Complete type definitions for all SDK interfaces
 
-### xrift-world-editing
-
-A guide for editing XRift worlds from the browser through WebMCP. While the user is inside an
-instance on `app.xrift.net`, an AI agent calls the tools the page exposes.
-
-- **SKILL.md** - Where the tools exist, coordinate and rotation conventions, limits, and the rules that keep the agent out of the user's way
-- **references/tool-reference.md** - Input/output schema for all nine tools, placeable types, and error messages
-
 ## Updating
 
 To update installed skills to the latest version:
