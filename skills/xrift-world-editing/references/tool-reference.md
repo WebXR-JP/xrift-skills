@@ -81,8 +81,8 @@ Placeable types and their dimension keys:
 Only the five primitives are `colorable`. What else each type takes:
 
 - **`image`** — `imageAssetId` (required to show anything): an `id` from `list-world-images`.
-  `textureSize`: `512` \| `1024` \| `2048` (long edge in px, default `1024`). URLs are not
-  accepted, so the image must be uploaded to this world first
+  `textureSize`: `128` \| `256` \| `512` \| `1024` \| `2048` (long edge in px, default `1024`).
+  URLs are not accepted, so the image must be uploaded to this world first
 - **`screen-share`** — nothing. What it shows is decided by whoever shares their screen in the
   instance, so there is nothing for the agent to set
 - **`sit-area`** — `exitOffset`: `{forward?, right?, up?}` in meters, seen from the seat, where
@@ -221,7 +221,7 @@ Each entry:
 | `materialType` | no | `standard` \| `metal` \| `glass` \| `glow`. Default `standard` |
 | `parentId` | no | Id of a **group** to place into. `position` then becomes relative to it |
 | `imageAssetId` | no | `image` only. An `id` from `list-world-images` |
-| `textureSize` | no | `image` only. `512` \| `1024` \| `2048` |
+| `textureSize` | no | `image` only. `128` \| `256` \| `512` \| `1024` \| `2048` |
 | `exitOffset` | no | `sit-area` only. `{forward?, right?, up?}` in meters |
 
 Returns the ids of what was placed. Keep them — the follow-up request is usually about them.
