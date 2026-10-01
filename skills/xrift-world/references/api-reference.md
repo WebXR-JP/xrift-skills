@@ -841,6 +841,29 @@ import { Portal } from '@xrift/world-components'
 />
 ```
 
+### Item
+
+Places a user-created item in the world from the start. The item body (Module Federation bundle) is loaded by the platform; the world only decides where it goes. Shows a wireframe placeholder box with a short reason until loaded or when it cannot load. `useItem().placedBy` inside the item is `null`.
+
+**Props**:
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `itemId` | `string` | Yes | Item ID (UUID in the My Items / marketplace URL). Must also be listed in `xrift.json` `world.items` |
+| `position` | `[number, number, number]` | No | Position (default: `[0, 0, 0]`) |
+| `rotation` | `[number, number, number]` | No | Rotation in radians (default: `[0, 0, 0]`) |
+| `scale` | `number` | No | Uniform scale (default: 1) |
+
+```typescript
+import { Item } from '@xrift/world-components'
+
+<Item itemId="2a69ded4-d913-4359-8c1f-eac83a982b0c" position={[2, 0, -3]} />
+```
+
+Requirements:
+- Declare the ID in `xrift.json` → `world.items` (undeclared IDs are not loaded in production)
+- Only items you created or added to your library can be declared
+- Local dev: `xriftDev()` from `@xrift/sdk/vite` in `vite.config.ts` + `xrift login`
+
 ### BillboardY
 
 Y-axis billboard component. Wraps children in a group that rotates on the Y-axis only to face the camera. Unlike drei's `<Billboard>` which rotates on all axes, this keeps the "up" direction intact — ideal for flames, particles, name plates, and signage.
@@ -1044,6 +1067,7 @@ Development environment wrapper. Provides physics, camera, crosshair, first-pers
 | `spawnPosition` | `[number, number, number]` | No | Spawn position (default: [0.11, 1.6, 7.59]) |
 | `respawnThreshold` | `number` | No | Respawn height threshold (default: -10) |
 | `physicsConfig` | `PhysicsConfig` | No | Physics settings |
+| `items` | `Record<string, ComponentType>` | No | Local item components injected into `<Item itemId>` (itemId → component). Undeclared IDs load the production bundle via the `xriftDev()` dev-server proxy |
 
 ```typescript
 import { DevEnvironment } from '@xrift/world-components'

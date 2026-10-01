@@ -251,6 +251,17 @@ interface PortalProps {
 }
 ```
 
+## ItemProps
+
+```typescript
+interface ItemProps {
+  itemId: string                          // Item ID (also declare in xrift.json world.items)
+  position?: [number, number, number]     // default [0, 0, 0]
+  rotation?: [number, number, number]     // radians, default [0, 0, 0]
+  scale?: number                          // default 1
+}
+```
+
 ## InstanceInfo
 
 Represents instance information. Retrieved from `useInstance()`.
