@@ -259,6 +259,7 @@ interface ItemProps {
   position?: [number, number, number]     // default [0, 0, 0]
   rotation?: [number, number, number]     // radians, default [0, 0, 0]
   scale?: number                          // default 1
+  id?: string                             // useItem().id; default derived from itemId + transform
 }
 ```
 

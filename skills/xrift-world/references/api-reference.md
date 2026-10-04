@@ -852,6 +852,7 @@ Places a user-created item in the world from the start. The item body (Module Fe
 | `position` | `[number, number, number]` | No | Position (default: `[0, 0, 0]`) |
 | `rotation` | `[number, number, number]` | No | Rotation in radians (default: `[0, 0, 0]`) |
 | `scale` | `number` | No | Uniform scale (default: 1) |
+| `id` | `string` | No | Placement id exposed as `useItem().id`. Defaults to a value derived from itemId + transform (identical on every client). Specify only when stacking the same item at the same place |
 
 ```typescript
 import { Item } from '@xrift/world-components'
