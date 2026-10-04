@@ -255,7 +255,7 @@ interface PortalProps {
 
 ```typescript
 interface ItemProps {
-  id: string                              // Placement name, unique in the world (useItem().id)
+  placementId: string                     // Placement id, unique in the world (useItem().id)
   itemId: string                          // Item ID (also declare in xrift.json world.items)
   position?: [number, number, number]     // default [0, 0, 0]
   rotation?: [number, number, number]     // radians, default [0, 0, 0]

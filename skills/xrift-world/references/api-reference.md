@@ -848,7 +848,7 @@ Places a user-created item in the world from the start. The item body (Module Fe
 **Props**:
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `id` | `string` | Yes | Name of this placement, unique within the world. Exposed as `useItem().id` and used as a shared-state key; keep it stable when moving the item |
+| `placementId` | `string` | Yes | ID of this placement, unique within the world (`itemId` = what to place, `placementId` = which placement). Exposed as `useItem().id` and used as a shared-state key; keep it stable when moving the item |
 | `itemId` | `string` | Yes | Item ID (UUID in the My Items / marketplace URL). Must also be listed in `xrift.json` `world.items` |
 | `position` | `[number, number, number]` | No | Position (default: `[0, 0, 0]`) |
 | `rotation` | `[number, number, number]` | No | Rotation in radians (default: `[0, 0, 0]`) |
@@ -857,7 +857,7 @@ Places a user-created item in the world from the start. The item body (Module Fe
 ```typescript
 import { Item } from '@xrift/world-components'
 
-<Item id="lamp-entrance" itemId="2a69ded4-d913-4359-8c1f-eac83a982b0c" position={[2, 0, -3]} />
+<Item placementId="lamp-entrance" itemId="2a69ded4-d913-4359-8c1f-eac83a982b0c" position={[2, 0, -3]} />
 ```
 
 Requirements:
