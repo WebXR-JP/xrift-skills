@@ -861,7 +861,7 @@ import { Item } from '@xrift/world-components'
 ```
 
 Requirements:
-- Declare the ID in `xrift.json` → `world.items` (undeclared IDs are not loaded in production)
+- Declare the ID in `xrift.json` → `world.items` (undeclared IDs are not loaded in production). A missing declaration is caught early: `xriftDev()` shows the same "not declared" placeholder locally, and `xrift upload` scans the bundle for `<Item itemId>` and stops before uploading if an ID is missing (`--skip-item-scan` only for false positives)
 - Only items you created or added to your library can be declared
 - Local dev: `xriftDev()` from `@xrift/sdk/vite` in `vite.config.ts` + `xrift login`
 
@@ -1068,7 +1068,7 @@ Development environment wrapper. Provides physics, camera, crosshair, first-pers
 | `spawnPosition` | `[number, number, number]` | No | Spawn position (default: [0.11, 1.6, 7.59]) |
 | `respawnThreshold` | `number` | No | Respawn height threshold (default: -10) |
 | `physicsConfig` | `PhysicsConfig` | No | Physics settings |
-| `items` | `Record<string, ComponentType>` | No | Local item components injected into `<Item itemId>` (itemId → component). Undeclared IDs load the production bundle via the `xriftDev()` dev-server proxy |
+| `items` | `Record<string, ComponentType>` | No | Local item components injected into `<Item itemId>` (itemId → component). IDs not in this map load the production bundle via the `xriftDev()` dev-server proxy. Every ID, local or not, must also be declared in `xrift.json` `world.items` |
 
 ```typescript
 import { DevEnvironment } from '@xrift/world-components'
