@@ -114,6 +114,20 @@ Specifies the output buffer type for WebGLRenderer. Affects post-processing and 
 }
 ```
 
+### items (Items Placed From the Start)
+
+IDs of user-created items placed in the world with `<Item itemId>`. Only the IDs listed here are loaded in production (preloaded on entry; visitors resolve bundle URLs from this list). You can only declare items you created or added to your library (acquire on the marketplace). Up to 50.
+
+```json
+{
+  "items": [
+    "2a69ded4-d913-4359-8c1f-eac83a982b0c"
+  ]
+}
+```
+
+Local development: add `xriftDev()` from `@xrift/sdk/vite` to `vite.config.ts` and run `xrift login`; `DevEnvironment` then loads the same bundles as production through the dev server proxy (`/__xrift`). To develop an item and a world together, pass local components via `<DevEnvironment items={{ [itemId]: Component }}>`.
+
 ### permissions (Permission Settings)
 
 Declares permissions required by the world. Declared permissions are shown to users as an approval screen when entering an instance.
