@@ -17,7 +17,7 @@ npx skills add WebXR-JP/xrift-skills
 
 XRift プラットフォーム用 WebXR ワールド制作ガイド。
 
-- **SKILL.md** - 最重要ルール、プロジェクト概要、設定、コマンド、トラブルシューティング
+- **SKILL.md** - 最重要ルール、対応端末（PC・モバイル・VR）のルール、プロジェクト概要、設定、コマンド、トラブルシューティング
 - **references/api-reference.md** - `@xrift/world-components` のフック・コンポーネント・定数の全仕様
 - **references/code-templates.md** - GLB モデル、テクスチャ、Skybox、インタラクション等のコードテンプレート
 - **references/type-definitions.md** - User, PlayerMovement, VRTrackingData 等の型定義
