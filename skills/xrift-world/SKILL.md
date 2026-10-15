@@ -29,6 +29,28 @@ const model = useGLTF('/robot.glb')           // Absolute path - NG
 const model = useGLTF(`${baseUrl}/robot.glb`) // Extra / - NG
 ```
 
+## Device Support (Must Follow)
+
+Visitors join the same instance from PC, mobile (smartphones and tablets), and VR headsets. **A world must work on at least both PC and mobile.** Support VR as far as possible.
+
+| Device | Support | Controls |
+|--------|---------|----------|
+| PC | Required | Mouse + keyboard, center crosshair + click |
+| Mobile | Required | Touch, virtual joystick |
+| VR | Best effort | Controllers, ray + trigger |
+
+The dev server (`npm run dev`) only exercises PC controls, so these mistakes go unnoticed:
+
+1. **Do not build features on custom keyboard shortcuts** (`window.addEventListener('keydown')`). Mobile and VR have no keyboard, so those features become unusable. Keys such as W/A/S/D, Space, Q/E, G, H, and Esc are also taken by the platform.
+   - Buttons and switches: wrap them in `Interactable` (click on PC, touch on mobile, controller in VR)
+   - Vehicles: use `onControlInput` on `Seat` / `Vehicle` (keyboard, virtual joystick, and thumbsticks arrive in the same form)
+   - Text entry: `TextInput`. Confirmation: `useConfirm`
+   - A shortcut is acceptable only as a PC convenience for an action that is also reachable through `Interactable`
+2. **Do not build HUDs or UI with DOM elements.** DOM overlays break on small or rotated mobile screens and overlap the platform's virtual joystick and buttons. In VR only the 3D scene is rendered, so DOM UI is not shown at all.
+   - Place UI as objects in 3D space: `Text` from `@react-three/drei`, panels and menus with `@react-three/uikit`
+   - Load `useDefaultFont` for Japanese text, wrap in `BillboardY` to face the player, wrap in `Interactable` to make it clickable
+3. **Do not make progress depend on `Grabbable` alone.** Grabbing currently works only on PC (pointer lock + crosshair).
+
 ## Project Overview
 
 - **Purpose**: WebXR worlds for the XRift platform

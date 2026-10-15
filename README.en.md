@@ -17,7 +17,7 @@ npx skills add WebXR-JP/xrift-skills
 
 A guide for building WebXR worlds on the XRift platform.
 
-- **SKILL.md** - Critical rules, project overview, configuration, commands, troubleshooting
+- **SKILL.md** - Critical rules, device support rules (PC, mobile, VR), project overview, configuration, commands, troubleshooting
 - **references/api-reference.md** - Full specification of `@xrift/world-components` hooks, components, and constants
 - **references/code-templates.md** - Code templates for GLB models, textures, Skybox, interactions, and more
 - **references/type-definitions.md** - Type definitions for User, PlayerMovement, VRTrackingData, etc.
