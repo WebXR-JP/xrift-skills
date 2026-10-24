@@ -589,3 +589,19 @@ interface UseServerClockResult {
   lastTimeJumpMs: number    // Most recent jump (ms); negative = jumped backward
 }
 ```
+
+
+## Viewpoint / UseViewpointResult
+
+Local player's camera viewpoint. Retrieved via the `useViewpoint()` hook.
+
+```typescript
+type Viewpoint = 'first-person' | 'third-person'
+// VR and camera-mode preview always report 'first-person'
+
+interface UseViewpointResult {
+  viewpoint: Viewpoint            // Current viewpoint. Re-renders when it changes
+  isThirdPerson: boolean          // viewpoint === 'third-person'
+  getViewpoint: () => Viewpoint   // A function — call from useFrame without re-render
+}
+```
