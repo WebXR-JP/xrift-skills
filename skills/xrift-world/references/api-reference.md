@@ -527,6 +527,41 @@ if (clock.trustworthy) {
 
 ---
 
+### useViewpoint()
+
+Hook returning whether the local player's own camera is first person or third person. On PC and mobile, players switch with the mouse wheel (two-finger pinch on mobile). Use it to vary what you show: hide head-mounted effects (goggle frame, headgear) in third person, or show a marker above your own head only in third person.
+
+**Returns**:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `viewpoint` | `'first-person' \| 'third-person'` | Current viewpoint. Re-renders when it changes |
+| `isThirdPerson` | `boolean` | `viewpoint === 'third-person'` |
+| `getViewpoint` | `() => 'first-person' \| 'third-person'` | **A function** — call from `useFrame` without re-rendering; correct from the very frame the viewpoint switches |
+
+**Principles**:
+- Returns `'first-person'` in **VR** (always first person) and **while previewing in camera mode** (photo capture uses a separate temporary camera; keeping first person prevents effects from switching at the moment of capture)
+- `DevEnvironment` has no third-person view, so it is always `'first-person'` locally. To test third-person branches, inject a fake via `<XRiftProvider viewpointImplementation={{ viewpoint: 'third-person', getViewpoint: () => 'third-person' }}>`
+- Detection only — worlds cannot force or lock the viewpoint
+- Requires `@xrift/world-components` >= 0.58.0
+
+```typescript
+import { useViewpoint } from '@xrift/world-components'
+import { useFrame } from '@react-three/fiber'
+
+// Re-render based
+const { isThirdPerson } = useViewpoint()
+return isThirdPerson ? <ArrowAboveMe /> : <GogglesFrame />
+
+// Per-frame
+const { getViewpoint } = useViewpoint()
+useFrame(() => {
+  mesh.current.visible = getViewpoint() === 'first-person'
+})
+```
+
+---
+
 ## Components
 
 ### Interactable
