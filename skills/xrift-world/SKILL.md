@@ -163,35 +163,52 @@ Declares permissions required by the world. Declared permissions are shown to us
 {
   "permissions": {
     "allowedDomains": ["api.example.com", "cdn.example.com"],
-    "allowedCodeRules": ["no-storage-access", "no-network-without-permission"]
+    "allowedCodeRules": ["no-navigator-access", "no-network-without-permission"]
   }
 }
 ```
 
 #### allowedCodeRules
 
-Rules defined by `@xrift/code-security` analyzer. By default, unsafe operations are blocked but can be relaxed when required.
+Rules of the `@xrift/code-security` analyzer that the world relaxes. Only the rules in the first table can be relaxed. Listing any other rule has no effect.
 
-| Category | Rule | Description |
-|----------|------|-------------|
-| Dynamic Code | `no-eval` | Allows `eval()` |
-| Dynamic Code | `no-new-function` | Allows `Function` constructor |
-| Dynamic Code | `no-string-timeout` | Allows `setTimeout`/`setInterval` with string args |
-| Dynamic Code | `no-javascript-blob` | Allows JavaScript Blob creation |
-| Obfuscation | `no-obfuscation` | Allows obfuscated code patterns |
-| Network | `no-network-without-permission` | Allows fetch, WebSocket, etc. |
-| Network | `no-unauthorized-domain` | Allows connections outside `allowedDomains` |
-| Network | `no-rtc-connection` | Allows WebRTC peer connections |
-| Network | `no-external-import` | Allows external JS module imports |
-| Storage | `no-storage-access` | Allows localStorage/sessionStorage |
-| Storage | `no-cookie-access` | Allows cookie read/write |
-| Storage | `no-indexeddb-access` | Allows IndexedDB access |
-| Storage | `no-storage-event` | Allows storage event listening |
-| DOM | `no-dangerous-dom` | Allows innerHTML and script injection |
-| Browser API | `no-navigator-access` | Allows geolocation, camera, mic, clipboard |
-| Global | `no-sensitive-api-override` | Allows overriding fetch, etc. |
-| Global | `no-global-override` | Allows overriding window, document |
-| Global | `no-prototype-pollution` | Allows prototype modification |
+| Rule | What it relaxes |
+|------|-----------------|
+| `no-new-function` | `Function` constructor |
+| `no-string-timeout` | `setTimeout`/`setInterval` with string args |
+| `no-javascript-blob` | JavaScript Blob creation |
+| `no-obfuscation` | Obfuscated code patterns |
+| `no-network-without-permission` | fetch, WebSocket, etc. whose destination is not a string literal (literal destinations are checked against `allowedDomains`) |
+| `no-rtc-connection` | WebRTC (`RTCPeerConnection`) |
+| `no-dangerous-dom` | innerHTML and script injection |
+| `no-navigator-access` | Geolocation, camera, mic, clipboard |
+| `no-global-override` | Overriding window, document |
+
+These rules can **never** be relaxed. Any violation makes the upload fail, so do not write code that triggers them:
+
+| Rule | Forbids |
+|------|---------|
+| `no-eval` | `eval()` |
+| `no-external-import` | Importing JS modules from external URLs |
+| `no-storage-access` | localStorage/sessionStorage (use `useWorldStorage` to persist data) |
+| `no-cookie-access` | Cookie read/write |
+| `no-indexeddb-access` | IndexedDB |
+| `no-storage-event` | Listening to storage events |
+| `no-sensitive-api-override` | Overriding fetch, etc. |
+| `no-prototype-pollution` | Prototype modification |
+
+Requests to hosts not in `allowedDomains` (`no-unauthorized-domain`) cannot be relaxed either. Add the host to `allowedDomains`.
+
+**WebRTC**: declare `no-rtc-connection`. Every STUN/TURN host in `iceServers`, including the defaults of libraries such as PeerJS, must be in `allowedDomains`. If `iceServers` comes from a variable or an API response, also declare `no-network-without-permission`.
+
+```json
+{
+  "permissions": {
+    "allowedDomains": ["stun.l.google.com"],
+    "allowedCodeRules": ["no-rtc-connection"]
+  }
+}
+```
 
 ## Command Reference
 
