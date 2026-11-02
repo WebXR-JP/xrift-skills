@@ -364,7 +364,7 @@ export const StagePodium = () => {
 
 ## Instance Event (Reaction)
 
-Send and receive custom events across all users in the instance.
+Send custom events to the other users in the instance. The sender does not receive its own event, so update local state when emitting.
 
 ```typescript
 import { useCallback, useState } from 'react'
@@ -373,13 +373,16 @@ import { useInstanceEvent, Interactable } from '@xrift/world-components'
 export const ReactionButton = () => {
   const [lastReaction, setLastReaction] = useState('')
 
-  const emitReaction = useInstanceEvent('reaction', (data: { emoji: string }) => {
-    setLastReaction(data.emoji)
+  // Reactions from other users arrive as { payload, senderId, timestamp }
+  const emitReaction = useInstanceEvent<{ emoji: string }>('reaction', ({ payload }) => {
+    setLastReaction(payload.emoji)
   })
 
   const sendReaction = useCallback(
     (emoji: string) => {
       emitReaction({ emoji })
+      // Your own event is not delivered back to you
+      setLastReaction(emoji)
     },
     [emitReaction],
   )
@@ -407,12 +410,12 @@ Listen for platform events when users join or leave the instance.
 import { useInstanceEvent } from '@xrift/world-components'
 
 export const JoinLeaveNotifier = () => {
-  useInstanceEvent('user-joined', (data) => {
-    console.log('User joined:', data)
+  useInstanceEvent('user-joined', ({ userId, isGuest }) => {
+    console.log('User joined:', userId, isGuest)
   })
 
-  useInstanceEvent('user-left', (data) => {
-    console.log('User left:', data)
+  useInstanceEvent('user-left', ({ userId }) => {
+    console.log('User left:', userId)
   })
 
   return null
