@@ -44,30 +44,36 @@ Hook for sending and receiving instance events. Supports platform events (`user-
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `eventName` | `string` | Event name |
-| `callback` | `(data: T) => void` | Callback when event is received |
+| `callback` | `(event: InstanceEvent<T>) => void` | Callback when a custom event is received (platform events: see below) |
 
 **Returns**: `(data: T) => void` — Emit function. Returns a no-op for platform events (`user-joined`, `user-left`).
 
-**Event Types**:
-| Type | Event Name | Send | Receive | Description |
-|------|-----------|:----:|:-------:|-------------|
-| Platform | `user-joined` | - | Yes | User joined the instance |
-| Platform | `user-left` | - | Yes | User left the instance |
-| Custom | Any string | Yes | Yes | World-specific custom events |
+**Received data** (do not read the sent value directly from the callback argument):
+| Event | Callback receives |
+|-------|-------------------|
+| Custom (any string) | `InstanceEvent<T>` = `{ payload: T, senderId: string, timestamp: number }`. The sent value is in `payload`. `senderId` is set by the server and cannot be spoofed. `timestamp` is on the shared clock (`useServerClock`) |
+| `user-joined` | `{ userId: string, isGuest: boolean }` |
+| `user-left` | `{ userId: string }` |
+
+**Delivery rules**:
+- Custom events are **not delivered to the sender**. To show your own event on your screen, handle it locally when emitting
+- Events emitted before joining the instance has finished are delivered after it finishes
+- Late joiners do not receive earlier events. Use `useInstanceState` for state they should see
+- In `DevEnvironment` there are no other participants, so custom events are not delivered anywhere. Test receiving with two tabs in production
 
 ```typescript
 import { useInstanceEvent } from '@xrift/world-components'
 
 // Receive platform events (receive only, cannot emit)
-useInstanceEvent('user-joined', (data) => {
-  console.log('User joined:', data)
+useInstanceEvent('user-joined', ({ userId }) => {
+  console.log('User joined:', userId)
 })
 
 // Send and receive custom events
-const emitReaction = useInstanceEvent('reaction', (data) => {
-  console.log('Reaction received:', data)
+const emitReaction = useInstanceEvent<{ emoji: string }>('reaction', ({ payload, senderId }) => {
+  console.log(`${senderId} reacted:`, payload.emoji)
 })
-emitReaction({ emoji: '👍', userId: 'user-1' })
+emitReaction({ emoji: '👍' })
 ```
 
 ### useUsers()
