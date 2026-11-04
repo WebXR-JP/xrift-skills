@@ -49,7 +49,7 @@ The dev server (`npm run dev`) only exercises PC controls, so these mistakes go 
 2. **Do not build HUDs or UI with DOM elements.** DOM overlays break on small or rotated mobile screens and overlap the platform's virtual joystick and buttons. In VR only the 3D scene is rendered, so DOM UI is not shown at all.
    - Place UI as objects in 3D space: `Text` from `@react-three/drei`, panels and menus with `@react-three/uikit`
    - Load `useDefaultFont` for Japanese text, wrap in `BillboardY` to face the player, wrap in `Interactable` to make it clickable
-3. **Do not make progress depend on `Grabbable` alone.** Grabbing works only on PC (pointer lock + crosshair) and in VR (controller grip), not on smartphones or with hand tracking.
+3. **Do not make progress depend on `Grabbable` alone.** Grabbing works on PC (pointer lock + crosshair), on smartphones and tablets (Grab / Release button), and in VR (controller grip), but not with hand tracking.
 
 ## Project Overview
 
