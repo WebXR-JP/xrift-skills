@@ -664,10 +664,12 @@ const [transform, setTransform] = useState<GrabbableTransform>(INITIAL)
 > **If children contain physics** (`RigidBody` etc.), you must pass a physics-free `renderGhost`.
 > Otherwise `children` is reused in the hand and the colliders overlap while carrying.
 
-> Controls: on PC, aim with the crosshair and press **G** to hold it in the right hand, **G** or
-> click to place, mouse wheel for distance, **Esc** to cancel. In VR, squeeze the grip to grab what
+> Controls: on PC, aim with the crosshair and press **G** to hold it in the right hand, **G** again
+> to place it where it is (clicking does not place it), mouse wheel for distance. Pressing **Esc** or
+> switching tabs releases the pointer lock but keeps it held. In VR, squeeze the grip to grab what
 > the hand touches (or what the ray points at), release to place, right stick up/down for distance.
-> Objects held by someone else can't be grabbed. `DevEnvironment` supports the PC controls.
+> Objects held by someone else can't be grabbed. `DevEnvironment` supports the PC controls
+> (there, clicking also places it and **Esc** returns it to where it was).
 
 > Omitting `onMove` and `sync` require `@xrift/world-components` 0.61.0 or later.
 
