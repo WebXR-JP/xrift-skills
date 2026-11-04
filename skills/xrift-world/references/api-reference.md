@@ -600,10 +600,18 @@ import { Interactable } from '@xrift/world-components'
 
 ### Grabbable
 
-Declares an object as grabbable. Players can grab it, float it in front of their view, and place
-it somewhere else. Child meshes are put on `LAYERS.GRABBABLE` (layer 14); the grabbing foundation
-(raycasting, carrying, committing) is provided by the platform, and `DevEnvironment` includes a
-system so you can test it while developing.
+Declares an object as grabbable. Players hold it in their hand, carry it, and place it somewhere
+else. Child meshes are put on `LAYERS.GRABBABLE` (layer 14); the grabbing foundation (aiming,
+holding, placing) is provided by the platform, and `DevEnvironment` includes a system so you can
+test it while developing.
+
+The platform shares the grabbing and the release position with everyone in the instance (`sync`,
+default `true`). The object stays where it was released without any state in the world, and
+people who join later see it in the same place. **Do not add `useState` + `onMove` just to keep the
+position** — that is only needed with `sync={false}`.
+
+`transform` is the initial pose. After someone moves the object the shared position is used, but if
+the world changes `transform` (e.g. a reset button), `transform` wins again.
 
 `transform` and `onMove` use the **local space of the parent** you place the `Grabbable` in (the
 same space as a normal `position` prop). Nesting it under a transformed parent group is safe — the
@@ -612,27 +620,21 @@ conversion to and from world space happens internally, so the release position n
 **Props**:
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `id` | `string` | Yes | Unique identifier |
-| `transform` | `GrabbableTransform` | Yes | Current pose, in the parent's local space. Applied to the root group, so write children around the origin |
-| `onMove` | `(transform: GrabResultTransform) => void` | Yes | Called when the player releases it. Returns the same local space as `transform`, so store it in state and feed it back |
-| `renderGhost` | `() => ReactNode` | No | Ghost shown while carrying (semi-transparent, no physics). Defaults to reusing `children` |
+| `id` | `string` | Yes | Unique identifier. Also identifies the same object for everyone in the instance |
+| `transform` | `GrabbableTransform` | Yes | Pose, in the parent's local space. Applied to the root group, so write children around the origin |
+| `onMove` | `(transform: GrabResultTransform) => void` | No | Called when the player releases it, in the same local space as `transform`. With `sync={false}`, store it in state and feed it back |
+| `sync` | `boolean` | No | Share the grabbing and release position with everyone (default: true). `false` keeps it on your own screen only |
+| `renderGhost` | `() => ReactNode` | No | What is shown in the hand while carrying (no physics). Defaults to reusing `children` |
 | `enabled` | `boolean` | No | Whether it can be grabbed (default: true) |
 
 ```typescript
-import { useState } from 'react'
-import { Grabbable, type GrabbableTransform } from '@xrift/world-components'
+import { Grabbable } from '@xrift/world-components'
 
 function GrabbableBall() {
-  const [transform, setTransform] = useState<GrabbableTransform>({
-    position: { x: 2, y: 0.5, z: -2 },
-    rotation: { x: 0, y: 0, z: 0 },
-  })
-
   return (
     <Grabbable
       id="ball"
-      transform={transform}
-      onMove={(next) => setTransform((prev) => ({ ...prev, ...next }))}
+      transform={{ position: { x: 2, y: 0.5, z: -2 }, rotation: { x: 0, y: 0, z: 0 } }}
     >
       {/* children are written around the origin */}
       <mesh>
@@ -644,11 +646,30 @@ function GrabbableBall() {
 }
 ```
 
-> **If children contain physics** (`RigidBody` etc.), you must pass a physics-free `renderGhost`.
-> Otherwise `children` is reused as the ghost and the colliders overlap while carrying.
+With `sync={false}`, keep the position in state yourself:
 
-> Grabbing assumes desktop (pointer lock + center crosshair). In `DevEnvironment`: **G** to grab
-> and place, mouse wheel to adjust distance, click to confirm, **Esc** to cancel.
+```typescript
+const [transform, setTransform] = useState<GrabbableTransform>(INITIAL)
+
+<Grabbable
+  id="my-cup"
+  sync={false}
+  transform={transform}
+  onMove={(next) => setTransform((prev) => ({ ...prev, ...next }))}
+>
+  ...
+</Grabbable>
+```
+
+> **If children contain physics** (`RigidBody` etc.), you must pass a physics-free `renderGhost`.
+> Otherwise `children` is reused in the hand and the colliders overlap while carrying.
+
+> Controls: on PC, aim with the crosshair and press **G** to hold it in the right hand, **G** or
+> click to place, mouse wheel for distance, **Esc** to cancel. In VR, squeeze the grip to grab what
+> the hand touches (or what the ray points at), release to place, right stick up/down for distance.
+> Objects held by someone else can't be grabbed. `DevEnvironment` supports the PC controls.
+
+> Omitting `onMove` and `sync` require `@xrift/world-components` 0.61.0 or later.
 
 ### Seat
 
