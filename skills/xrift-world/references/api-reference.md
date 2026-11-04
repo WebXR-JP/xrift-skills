@@ -668,8 +668,8 @@ const [transform, setTransform] = useState<GrabbableTransform>(INITIAL)
 > to place it where it is (clicking does not place it), mouse wheel for distance. Pressing **Esc** or
 > switching tabs releases the pointer lock but keeps it held. In VR, squeeze the grip to grab what
 > the hand touches (or what the ray points at), release to place, right stick up/down for distance.
-> Objects held by someone else can't be grabbed. `DevEnvironment` supports the PC controls
-> (there, clicking also places it and **Esc** returns it to where it was).
+> Objects held by someone else can't be grabbed. `DevEnvironment` supports the same PC controls
+> (`@xrift/world-components` 0.61.1 or later).
 
 > Omitting `onMove` and `sync` require `@xrift/world-components` 0.61.0 or later.
 
