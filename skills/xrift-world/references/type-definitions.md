@@ -374,6 +374,17 @@ interface GrabResultTransform {
 }
 ```
 
+## GrabUseEvent
+
+Passed to `Grabbable`'s `onUseStart` / `onUseEnd` (0.62.0 or later).
+
+```typescript
+interface GrabUseEvent {
+  hand: 'left' | 'right'           // PC and smartphones are always 'right'
+  transform: GrabResultTransform   // held pose at that moment, parent-local space
+}
+```
+
 ## SeatOccupant
 
 Who is sitting in a `Seat` (passed to `onEnter` / `onLeave`).

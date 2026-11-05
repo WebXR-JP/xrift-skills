@@ -624,6 +624,8 @@ conversion to and from world space happens internally, so the release position n
 | `transform` | `GrabbableTransform` | Yes | Pose, in the parent's local space. Applied to the root group, so write children around the origin |
 | `onMove` | `(transform: GrabResultTransform) => void` | No | Called when the player releases it, in the same local space as `transform`. With `sync={false}`, store it in state and feed it back |
 | `sync` | `boolean` | No | Share the grabbing and release position with everyone (default: true). `false` keeps it on your own screen only |
+| `onUseStart` | `(event: GrabUseEvent) => void` | No | Called when "use" is pressed while holding it (fire, swing, start charging). Only on the holder's screen |
+| `onUseEnd` | `(event: GrabUseEvent) => void` | No | Called when "use" is released. Always called, also when placed or removed mid-press |
 | `renderGhost` | `() => ReactNode` | No | What is shown in the hand while carrying (no physics). Defaults to reusing `children` |
 | `enabled` | `boolean` | No | Whether it can be grabbed (default: true) |
 
@@ -661,19 +663,54 @@ const [transform, setTransform] = useState<GrabbableTransform>(INITIAL)
 </Grabbable>
 ```
 
+**Using a held object** (`onUseStart` / `onUseEnd`): attach any action to the controls while it is
+held — press and release both arrive, so rapid fire and charge-and-release work. Interactions are
+stopped while the player holds an object.
+
+```typescript
+import { Grabbable, type GrabResultTransform, useInstanceEvent } from '@xrift/world-components'
+
+function Gun() {
+  // The sender does not receive its own event: spawn locally, emit for everyone else
+  const emitShot = useInstanceEvent<{ from: GrabResultTransform['position'] }>(
+    'gun-shot',
+    ({ payload }) => spawnBullet(payload.from),
+  )
+  return (
+    <Grabbable
+      id="gun"
+      transform={INITIAL}
+      onUseStart={({ transform }) => {
+        spawnBullet(transform.position)
+        emitShot({ from: transform.position })
+      }}
+    >
+      <GunModel />
+    </Grabbable>
+  )
+}
+```
+
+- Called **only on the holder's screen**. Broadcast results (bullets, sounds, hits) yourself, e.g. with `useInstanceEvent`
+- `transform` is the held pose at that moment, in the same parent-local space as `transform` / `onMove`. `hand` is `'left'` / `'right'` (always `'right'` on PC and smartphones)
+- `onUseEnd` also fires when the object is placed, switched hands, removed, or camera mode starts mid-press — stop rapid fire there and it never gets stuck
+
 > **If children contain physics** (`RigidBody` etc.), you must pass a physics-free `renderGhost`.
 > Otherwise `children` is reused in the hand and the colliders overlap while carrying.
 
 > Controls: on PC, aim with the crosshair and press **G** to hold it in the right hand, **G** again
-> to place it where it is (clicking does not place it), mouse wheel for distance. Pressing **Esc** or
+> to place it where it is (clicking does not place it), mouse wheel for distance, **click** while holding to use it. Pressing **Esc** or
 > switching tabs releases the pointer lock but keeps it held. On smartphones and tablets, point the
-> crosshair at it and tap the **Grab** button above the interact button; tap **Release** to place it,
-> and pinch with two fingers for distance. In VR, squeeze the grip to grab what the hand touches
-> (or what the ray points at), release to place, right stick up/down for distance.
+> crosshair at it and tap the **Grab** button above the interact button; tap **Release** to place it;
+> while holding, the interact button becomes **Use** (dimmed if the object has no use action), and
+> pinch with two fingers for distance. In VR, squeeze the grip to grab what the hand touches
+> (or what the ray points at), release to place, the holding hand's **trigger** to use (the other hand still interacts), right
+> stick up/down for distance.
 > Objects held by someone else can't be grabbed. `DevEnvironment` supports the same PC controls
 > (`@xrift/world-components` 0.61.1 or later).
 
 > Omitting `onMove` and `sync` require `@xrift/world-components` 0.61.0 or later.
+> `onUseStart` / `onUseEnd` require 0.62.0 or later.
 
 ### Seat
 
