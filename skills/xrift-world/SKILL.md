@@ -11,7 +11,7 @@ A guide for creating and modifying WebXR worlds for the XRift platform.
 
 - [API Reference](references/api-reference.md) - Full specification of all hooks, components, and constants in `@xrift/world-components`
 - [Code Templates](references/code-templates.md) - Implementation patterns for GLB models, textures, Skybox, interactions, and more
-- [Type Definitions](references/type-definitions.md) - Type definitions for User, PlayerMovement, VRTrackingData, TeleportDestination, WorldInfo, InstanceInfo, ConfirmOptions, Tag, VideoState, LogEntry, PhysicsConfig, CameraConfig, VoiceVolumeOverrideContextValue
+- [Type Definitions](references/type-definitions.md) - Type definitions for User, PlayerMovement, VRTrackingData, TeleportDestination, WorldInfo, InstanceInfo, InstanceContextValue, PortalProps, ConfirmOptions, Tag, VideoState, LogEntry, PhysicsConfig, CameraConfig, VoiceVolumeOverrideContextValue
 
 ## Critical Rules (Must Follow)
 
@@ -50,6 +50,14 @@ The dev server (`npm run dev`) only exercises PC controls, so these mistakes go 
    - Place UI as objects in 3D space: `Text` from `@react-three/drei`, panels and menus with `@react-three/uikit`
    - Load `useDefaultFont` for Japanese text, wrap in `BillboardY` to face the player, wrap in `Interactable` to make it clickable
 3. **Do not make progress depend on `Grabbable` alone.** Grabbing works on PC (pointer lock + crosshair), on smartphones and tablets (Grab / Release button), and in VR (controller grip), but not with hand tracking.
+
+## Instances (Must Follow)
+
+An instance is one room of a world. It exists only while someone is in it: **5 minutes after the last person leaves, it is closed** and its URL and ID stop resolving. Only XRift Plus **persistent instances** stay.
+
+1. **Portals point at worlds**: `<Portal worldId="..." />` (or `navigateToWorld`). The platform picks the instance when the player steps through
+2. **Use an instance ID only for a persistent instance** (`<Portal instanceId>`, `useInstance`, `navigateToInstance`). A portal to an ordinary instance loses its destination once that room empties
+3. **State that must outlive the instance goes in `useWorldStorage`**, not `useInstanceState`
 
 ## Project Overview
 

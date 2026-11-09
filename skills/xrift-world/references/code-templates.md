@@ -187,18 +187,22 @@ export const TeleportZone = () => {
 
 ## Confirm Before World Navigation
 
-Use `useConfirm` to ask the user for confirmation before navigating to another world. This also avoids iOS Safari's popup blocker by ensuring navigation is triggered from a user gesture.
+Use `useConfirm` to ask the user for confirmation, then `navigateToWorld` from `useInstanceContext()` to move to another world. The platform picks the instance to join. Confirming first also avoids iOS Safari's popup blocker by ensuring navigation is triggered from a user gesture. (For the standard look, use `<Portal worldId>` below instead; this template is for a custom-shaped gate.)
 
 ```typescript
-import { useConfirm, Interactable } from '@xrift/world-components'
+import { useConfirm, useInstanceContext, Interactable } from '@xrift/world-components'
 
 export const WorldPortal = ({ worldId }: { worldId: string }) => {
   const { requestConfirm } = useConfirm()
+  const { navigateToWorld } = useInstanceContext()
 
   const handleEnter = async () => {
     const ok = await requestConfirm({ message: 'ワールドを移動しますか？' })
-    if (ok) {
-      window.location.href = `/worlds/${worldId}`
+    if (!ok) return
+    try {
+      await navigateToWorld(worldId)
+    } catch (e) {
+      console.error('navigation failed', e) // full, rate limited, world gone
     }
   }
 
@@ -217,9 +221,9 @@ export const WorldPortal = ({ worldId }: { worldId: string }) => {
 }
 ```
 
-## Portal to Another Instance
+## Portal to Another World
 
-Place a portal that lets players navigate to another instance with a confirmation dialog.
+Place a portal that lets players navigate to another world with a confirmation dialog. Point it at a **world** (`worldId`); the platform picks the instance when the player steps through. Use `instanceId` only for an XRift Plus persistent instance, because ordinary instances close 5 minutes after the last person leaves and the portal would lose its destination.
 
 ```typescript
 import { Portal } from '@xrift/world-components'
@@ -227,17 +231,23 @@ import { Portal } from '@xrift/world-components'
 export const MyWorld = () => {
   return (
     <>
-      {/* Portal to a specific instance */}
+      {/* Portal to a world (usual) */}
       <Portal
-        instanceId="target-instance-id"
+        worldId="target-world-id"
         position={[5, 0, 0]}
       />
 
       {/* Multiple portals */}
       <Portal
-        instanceId="another-instance-id"
+        worldId="another-world-id"
         position={[-5, 0, 0]}
         rotation={[0, Math.PI, 0]}
+      />
+
+      {/* Only for an XRift Plus persistent instance */}
+      <Portal
+        instanceId="persistent-instance-id"
+        position={[0, 0, -5]}
       />
     </>
   )
@@ -246,7 +256,7 @@ export const MyWorld = () => {
 
 ## Instance / World Info Display
 
-Use `useInstance` or `useWorld` to fetch and display information about instances or worlds.
+Use `useInstance` or `useWorld` to fetch and display information about instances or worlds. A hard-coded instance ID only makes sense for an XRift Plus persistent instance (other instances close 5 minutes after they empty); for anything else, display the world with `useWorld`.
 
 ```typescript
 import { Text } from '@react-three/drei'
