@@ -190,10 +190,12 @@ const ref = useBillboardY<Mesh>()
 
 Hook for fetching instance information and navigating to an instance with a confirmation dialog. Internally uses `InstanceContext` (injected by the platform) and `useConfirm` for the confirmation modal.
 
+> Instances close 5 minutes after the last person leaves, and a closed instance's ID no longer resolves. Only XRift Plus **persistent instances** stay. Hard-code an instance ID only for one of those; to send players to another world, use `<Portal worldId>` or `navigateToWorld` instead.
+
 **Parameters**:
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `instanceId` | `string` | Target instance ID |
+| `instanceId` | `string` | Target instance ID (a persistent instance) |
 
 **Returns**:
 | Property | Type | Description |
@@ -233,6 +235,37 @@ const { info } = useWorld('target-world-id')
 // info?.name — world name
 // info?.thumbnailUrl — thumbnail URL
 ```
+
+### useInstanceContext()
+
+Hook returning the platform-injected `InstanceContextValue`: instance lookup and navigation without the built-in `Portal`. Use it for a custom-shaped gate, a menu, or a button that moves the player to another world.
+
+**Returns**:
+| Property | Type | Description |
+|----------|------|-------------|
+| `getInstanceInfo` | `(instanceId: string) => Promise<InstanceInfo>` | Fetch instance information |
+| `navigateToInstance` | `(instanceId: string) => void \| Promise<void>` | Move to a specific instance. Persistent (XRift Plus) instances only: other instances close 5 minutes after the last person leaves |
+| `navigateToWorld` | `(worldId: string) => void \| Promise<void>` | Move to a world. The platform picks the instance (joins a public one, or creates a new one). Use this for everything that is not a persistent instance |
+
+Both navigation functions can reject (full, rate limited, target gone), so `await` them in `try` / `catch`. Ask for confirmation with `useConfirm` first: navigation must come from a user gesture (iOS Safari popup blocker), and leaving the world without warning is confusing.
+
+```typescript
+import { useConfirm, useInstanceContext } from '@xrift/world-components'
+
+const { requestConfirm } = useConfirm()
+const { navigateToWorld } = useInstanceContext()
+
+const enter = async () => {
+  if (!(await requestConfirm({ message: 'ワールドを移動しますか？' }))) return
+  try {
+    await navigateToWorld('target-world-id')
+  } catch (e) {
+    console.error('navigation failed', e)
+  }
+}
+```
+
+> `navigateToWorld` requires `@xrift/world-components` 0.63.0 or later.
 
 ### useVoiceVolumeOverride()
 
@@ -925,12 +958,20 @@ import { VideoPlayer } from '@xrift/world-components'
 
 ### Portal
 
-A portal component for navigating to another instance. Displays the target instance's world thumbnail, name, and a vortex shader effect. When a player steps onto the pedestal, a confirmation modal is shown before navigating.
+A portal component for navigating to another world or instance. Displays the destination's thumbnail and name with a vortex shader effect. When a player steps onto the pedestal, a confirmation modal is shown before navigating.
+
+The destination is **either** `worldId` **or** `instanceId`, never both:
+
+- `worldId` (the usual choice): the platform picks the instance when the player steps through (joins a public instance of that world, or creates a new one)
+- `instanceId`: only for XRift Plus **persistent instances**. Ordinary instances close 5 minutes after the last person leaves, so a portal that points at one loses its destination
+
+If the destination cannot be resolved (a closed instance, a world that does not exist), the portal renders without destination info and tries again when a player steps on it.
 
 **Props**:
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `instanceId` | `string` | Yes | Target instance ID |
+| `worldId` | `string` | One of `worldId` / `instanceId` | Target world ID. The instance to join is chosen on entry |
+| `instanceId` | `string` | One of `worldId` / `instanceId` | Target instance ID. Persistent (XRift Plus) instances only |
 | `position` | `[number, number, number]` | No | Position (default: `[0, 0, 0]`) |
 | `rotation` | `[number, number, number]` | No | Rotation (default: `[0, 0, 0]`) |
 | `disabled` | `boolean` | No | Disable portal navigation (default: false) |
@@ -938,11 +979,22 @@ A portal component for navigating to another instance. Displays the target insta
 ```typescript
 import { Portal } from '@xrift/world-components'
 
+// Usual: point at a world
 <Portal
-  instanceId="target-instance-id"
+  worldId="target-world-id"
   position={[5, 0, 0]}
 />
+
+// Only for an XRift Plus persistent instance
+<Portal
+  instanceId="persistent-instance-id"
+  position={[-5, 0, 0]}
+/>
 ```
+
+The confirmation modal shows the world name. For an instance destination it also shows the instance name and current user count; for a world destination it does not, since the instance is decided on entry.
+
+> `worldId` requires `@xrift/world-components` 0.63.0 or later. Earlier versions accept `instanceId` only.
 
 ### Item
 

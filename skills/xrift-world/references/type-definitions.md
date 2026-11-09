@@ -240,16 +240,20 @@ class WorldStorageError extends Error {
 
 ## PortalProps
 
-Props for the `Portal` component.
+Props for the `Portal` component. The destination is either `worldId` or `instanceId`, never both.
 
 ```typescript
-interface PortalProps {
-  instanceId: string
+type PortalProps = {
   position?: [number, number, number]  // Default: [0, 0, 0]
   rotation?: [number, number, number]  // Default: [0, 0, 0]
   disabled?: boolean                   // Default: false
-}
+} & (
+  | { worldId: string; instanceId?: undefined }   // Usual: the platform picks the instance on entry
+  | { instanceId: string; worldId?: undefined }   // XRift Plus persistent instances only
+)
 ```
+
+Ordinary instances close 5 minutes after the last person leaves, so `instanceId` is only for a persistent instance. `worldId` requires `@xrift/world-components` 0.63.0 or later.
 
 ## ItemProps
 
@@ -265,7 +269,7 @@ interface ItemProps {
 
 ## InstanceInfo
 
-Represents instance information. Retrieved from `useInstance()`.
+Represents instance information. Retrieved from `useInstance()`. An instance exists only while someone is in it: 5 minutes after the last person leaves it is closed and its ID no longer resolves. Only XRift Plus persistent instances stay.
 
 ```typescript
 interface InstanceInfo {
@@ -314,14 +318,19 @@ interface WorldInfo {
 
 ## InstanceContextValue
 
-Context value provided by `InstanceContext`. Injected by the platform to provide instance data fetching and navigation.
+Context value provided by `InstanceContext`. Injected by the platform to provide instance data fetching and navigation. Retrieved via `useInstanceContext()`.
 
 ```typescript
 interface InstanceContextValue {
   getInstanceInfo: (instanceId: string) => Promise<InstanceInfo>
-  navigateToInstance: (instanceId: string) => void
+  // Persistent (XRift Plus) instances only; other instances close 5 minutes after they empty
+  navigateToInstance: (instanceId: string) => void | Promise<void>
+  // The platform picks the instance (joins a public one, or creates a new one). 0.63.0 or later
+  navigateToWorld: (worldId: string) => void | Promise<void>
 }
 ```
+
+Both navigation functions can reject (full, rate limited, target gone).
 
 ## WorldContextValue
 
