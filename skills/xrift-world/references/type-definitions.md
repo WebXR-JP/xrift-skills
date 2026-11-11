@@ -394,6 +394,16 @@ interface GrabUseEvent {
 }
 ```
 
+## GrabHoldEvent
+
+Passed to `Grabbable`'s `onGrab` / `onRelease` (0.64.0 or later).
+
+```typescript
+interface GrabHoldEvent {
+  isMine: boolean   // true when you are (or were) the holder
+}
+```
+
 ## SeatOccupant
 
 Who is sitting in a `Seat` (passed to `onEnter` / `onLeave`).
