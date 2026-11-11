@@ -732,11 +732,11 @@ function Gun() {
 > Otherwise `children` is reused in the hand and the colliders overlap while carrying.
 
 > Controls: on PC, aim with the crosshair and press **G** to hold it in the right hand, **G** again
-> to place it where it is (clicking does not place it), mouse wheel for distance, **click** while holding to use it. Pressing **Esc** or
+> to place it where it is (clicking does not place it), **click** while holding to use it. Pressing **Esc** or
 > switching tabs releases the pointer lock but keeps it held. On smartphones and tablets, point the
 > crosshair at it and tap the **Grab** button above the interact button; tap **Release** to place it;
-> while holding, the interact button becomes **Use** (dimmed if the object has no use action), and
-> pinch with two fingers for distance. In VR, squeeze the grip to grab what the hand touches
+> while holding, the interact button becomes **Use** (dimmed if the object has no use action).
+> In VR, squeeze the grip to grab what the hand touches
 > (or what the ray points at), release to place, the holding hand's **trigger** to use (the other hand still interacts), right
 > stick up/down for distance.
 > Objects held by someone else can't be grabbed. `DevEnvironment` supports the same PC controls
