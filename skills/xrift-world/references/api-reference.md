@@ -659,7 +659,8 @@ conversion to and from world space happens internally, so the release position n
 | `sync` | `boolean` | No | Share the grabbing and release position with everyone (default: true). `false` keeps it on your own screen only |
 | `onUseStart` | `(event: GrabUseEvent) => void` | No | Called when "use" is pressed while holding it (fire, swing, start charging). Only on the holder's screen |
 | `onUseEnd` | `(event: GrabUseEvent) => void` | No | Called when "use" is released. Always called, also when placed or removed mid-press |
-| `renderGhost` | `() => ReactNode` | No | What is shown in the hand while carrying (no physics). Defaults to reusing `children` |
+| `onGrab` | `(event: GrabHoldEvent) => void` | No | Called when anyone picks it up. Runs on every client |
+| `onRelease` | `(event: GrabHoldEvent) => void` | No | Called when it leaves the hand (placed, cancelled, or the holder left). Runs on every client; after `onMove` when placed |
 | `enabled` | `boolean` | No | Whether it can be grabbed (default: true) |
 
 ```typescript
@@ -728,8 +729,31 @@ function Gun() {
 - `transform` is the held pose at that moment, in the same parent-local space as `transform` / `onMove`. `hand` is `'left'` / `'right'` (always `'right'` on PC and smartphones)
 - `onUseEnd` also fires when the object is placed, switched hands, removed, or camera mode starts mid-press — stop rapid fire there and it never gets stuck
 
-> **If children contain physics** (`RigidBody` etc.), you must pass a physics-free `renderGhost`.
-> Otherwise `children` is reused in the hand and the colliders overlap while carrying.
+**Picked up / released** (`onGrab` / `onRelease`): while held, `children` itself moves to the
+holder's hand (no copy is rendered). If children contain physics (`RigidBody` etc.), remove the
+colliders in `onGrab` and restore them in `onRelease`; keep the mesh mounted so it is not recreated:
+
+```tsx
+const [isHeld, setIsHeld] = useState(false)
+const handleGrab = useCallback(() => setIsHeld(true), [])
+const handleRelease = useCallback(() => setIsHeld(false), [])
+
+<Grabbable id="crate" transform={INITIAL} onGrab={handleGrab} onRelease={handleRelease}>
+  <mesh>
+    <boxGeometry args={[0.5, 0.5, 0.5]} />
+    <meshStandardMaterial color="#a2845e" />
+  </mesh>
+  {!isHeld && (
+    <RigidBody type="fixed" colliders={false}>
+      <CuboidCollider args={[0.25, 0.25, 0.25]} />
+    </RigidBody>
+  )}
+</Grabbable>
+```
+
+- `event.isMine` is true when you are (or were) the holder — use it for holder-only effects such as sounds
+- When the holder changes, `onRelease` fires and then `onGrab`
+- `renderGhost` is deprecated and ignored from 0.64.0
 
 > Controls: on PC, aim with the crosshair and press **G** to hold it in the right hand, **G** again
 > to place it where it is (clicking does not place it), **click** while holding to use it. Pressing **Esc** or
@@ -743,7 +767,7 @@ function Gun() {
 > (`@xrift/world-components` 0.61.1 or later).
 
 > Omitting `onMove` and `sync` require `@xrift/world-components` 0.61.0 or later.
-> `onUseStart` / `onUseEnd` require 0.62.0 or later.
+> `onUseStart` / `onUseEnd` require 0.62.0 or later. `onGrab` / `onRelease` require 0.64.0 or later.
 
 ### Seat
 
