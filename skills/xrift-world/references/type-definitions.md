@@ -339,6 +339,11 @@ Context value provided by `WorldContext`. Injected by the platform to provide wo
 ```typescript
 interface WorldContextValue {
   getWorldInfo: (worldId: string) => Promise<WorldInfo>
+  /**
+   * Opens the world's details in the platform UI (0.65.0+). Called when a player interacts with a `Portal`.
+   * Undefined when the platform cannot open it (e.g. for guests); the portal is then not interactable
+   */
+  openWorldDetail?: (worldId: string) => void
 }
 ```
 
