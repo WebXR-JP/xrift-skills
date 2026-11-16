@@ -991,6 +991,8 @@ The destination is **either** `worldId` **or** `instanceId`, never both:
 
 If the destination cannot be resolved (a closed instance, a world that does not exist), the portal renders without destination info and tries again when a player steps on it.
 
+Interacting with the portal (aiming at it, around the thumbnail) opens the destination world's details in the platform dashboard, where the player can pick an instance. For an `instanceId` portal it opens that instance's world. This is built in: do not wrap `Portal` in your own `Interactable`. Guests cannot interact with it.
+
 **Props**:
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
@@ -1018,7 +1020,7 @@ import { Portal } from '@xrift/world-components'
 
 The confirmation modal shows the world name. For an instance destination it also shows the instance name and current user count; for a world destination it does not, since the instance is decided on entry.
 
-> `worldId` requires `@xrift/world-components` 0.63.0 or later. Earlier versions accept `instanceId` only.
+> `worldId` requires `@xrift/world-components` 0.63.0 or later. Earlier versions accept `instanceId` only. Interacting to open the world details requires 0.65.0 or later (0.66.0 or later for `instanceId` portals).
 
 ### Item
 
