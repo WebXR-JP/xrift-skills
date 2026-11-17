@@ -2,8 +2,8 @@
 
 [English](README.en.md)
 
-XRift ワールド制作のための [Agent Skills](https://github.com/vercel-labs/skills)。
-AI コーディングエージェント（Claude Code, Cursor, Copilot, Codex 等）で XRift ワールドを作成する際に必要な情報を提供します。
+XRift で開発するための [Agent Skills](https://github.com/vercel-labs/skills)。
+AI コーディングエージェント（Claude Code, Cursor, Copilot, Codex 等）が、XRift のワールド制作、ワールドやアイテムのアップロード、Public API を使ったデータ取得を行う際に必要な情報を提供します。
 
 ## インストール
 

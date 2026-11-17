@@ -2,8 +2,8 @@
 
 [日本語](README.md)
 
-[Agent Skills](https://github.com/vercel-labs/skills) for building XRift worlds.
-Provides essential information for AI coding agents (Claude Code, Cursor, Copilot, Codex, etc.) when creating XRift worlds.
+[Agent Skills](https://github.com/vercel-labs/skills) for developing with XRift.
+Provides essential information for AI coding agents (Claude Code, Cursor, Copilot, Codex, etc.) when building XRift worlds, uploading worlds and items, and fetching data from the Public API.
 
 ## Installation
 
