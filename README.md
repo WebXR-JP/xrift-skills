@@ -31,6 +31,14 @@ XRift プラットフォーム用 WebXR ワールド制作ガイド。
 - **references/code-templates.md** - Node.js・ブラウザ環境それぞれのコード例
 - **references/type-definitions.md** - SDK の全インターフェースの型定義
 
+### xrift-public-api
+
+API キーを使って Public API v1（REST）から XRift のデータを読むためのガイド。ボット・ダッシュボード・外部ツールの開発向け。
+
+- **SKILL.md** - 最重要ルール、認証、スコープ、ページ指定の規則、レート制限、マーケットプレイス・イベントの考え方
+- **references/api-reference.md** - ワールド・ユーザー・インスタンス・マーケットプレイス・イベント・統計の全エンドポイントの仕様
+- **references/code-templates.md** - fetch を使った最小のクライアント、全ページの取得、イベントの取得、エラー処理のコード例
+
 ## 更新
 
 インストール済みのスキルを最新版に更新するには：
