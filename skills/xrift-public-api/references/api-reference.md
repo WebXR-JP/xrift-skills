@@ -128,16 +128,20 @@ Instance object (main fields):
 | `id` | string | Instance ID |
 | `worldId` | string | |
 | `name` | string | |
-| `currentUsers` | number | Users connected right now |
-| `maxCapacity` | number | |
+| `currentUsers` | number | People in the instance right now, guests included. Use this for the head count |
+| `maxCapacity` | number | Maximum number of people the instance accepts |
 | `isPublic` | boolean | |
 | `allowGuests` | boolean | Whether unregistered guests can join |
 | `kind` | string | `MANUAL` (created by a user) / `EVENT` (event venue) / `SOLO` |
 | `eventId` | string \| null | The event this instance hosts, when `kind` is `EVENT` |
 | `persistent` | boolean | XRift Plus permanent instance |
+| `persistentActive` | boolean | Whether the permanent setting is in effect (within the owner's limit). `false` means the instance is deleted once empty |
 | `owner` | `{ id, displayName, userIconUrl? }` | |
+| `participants` | `{ id, displayName, userIconUrl }[]` | For display only (e.g. a row of icons): at most the first 5 registered users, never guests |
 | `world` | World object | Included when available |
 | `createdAt` | string | |
+
+**Count people with `currentUsers`, not `participants.length`.** `participants` is capped at 5 and excludes guests, so its length is often smaller than the real head count.
 
 ### `GET /instances/:id`
 
