@@ -256,6 +256,48 @@ Errors (`400`): missing or invalid `from` / `to`, `from` after `to`, period over
 
 ---
 
+## Friends
+
+### `GET /friends/online`
+
+**Scope**: `read:friends`. The API key owner's friends who are online right now. No pagination — the response is `{ "data": [...] }`, and `data` is an empty array when nobody is online.
+
+Not included: offline friends, pending friend requests, banned users.
+
+| Friend's state | Returned as |
+|---|---|
+| In a public instance of a public world | Included with location |
+| In a private instance or a private world | Included with `null` location only if the friend opted in to "show me as online in private"; otherwise not included |
+| Online but not in any instance | Included with `null` location |
+
+Online friend object:
+
+| Field | Type | Description |
+|---|---|---|
+| `user` | `{ id, displayName, userIconUrl }` | `userIconUrl` is `string \| null` |
+| `instanceId` | string \| null | `null` when the location isn't shown |
+| `instanceName` | string \| null | |
+| `worldId` | string \| null | |
+| `worldName` | string \| null | `null` also when the world has no published version |
+| `connectedAt` | string \| null | When the friend connected (ISO 8601) |
+
+```json
+{
+  "data": [
+    {
+      "user": { "id": "user-uuid", "displayName": "Alice", "userIconUrl": null },
+      "instanceId": "instance-uuid",
+      "instanceName": "Main Lobby",
+      "worldId": "world-uuid",
+      "worldName": "My World",
+      "connectedAt": "2026-11-22T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+---
+
 ## Stats
 
 ### `GET /stats`

@@ -35,9 +35,9 @@ A guide for programmatically uploading worlds and items with `@xrift/sdk`.
 
 A guide for reading XRift data from the Public API v1 (REST) with an API key. For building bots, dashboards, and external tools.
 
-- **SKILL.md** - Critical rules, authentication, scopes, pagination rules, rate limits, marketplace and event concepts
-- **references/api-reference.md** - Specification of every endpoint: worlds, users, instances, marketplace, events, and stats
-- **references/code-templates.md** - `fetch` examples: a minimal client, fetching all pages, events, error handling
+- **SKILL.md** - Critical rules, authentication, scopes, pagination rules, rate limits, marketplace, event, and friend concepts
+- **references/api-reference.md** - Specification of every endpoint: worlds, users, instances, marketplace, events, friends, and stats
+- **references/code-templates.md** - `fetch` examples: a minimal client, fetching all pages, events, online friends, error handling
 
 ## Updating
 

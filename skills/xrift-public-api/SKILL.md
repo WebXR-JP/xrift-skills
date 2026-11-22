@@ -1,6 +1,6 @@
 ---
 name: xrift-public-api
-description: Guide for reading XRift platform data over the Public API v1 (REST) with an API key. Covers authentication, scopes, pagination and validation rules, rate limits, and every read endpoint — worlds, users, instances, marketplace items, events, and platform stats. Use when building bots, dashboards, or external tools that fetch XRift data.
+description: Guide for reading XRift platform data over the Public API v1 (REST) with an API key. Covers authentication, scopes, pagination and validation rules, rate limits, and every read endpoint — worlds, users, instances, marketplace items, events, your online friends, and platform stats. Use when building bots, dashboards, or external tools that fetch XRift data.
 ---
 
 # XRift Public API Guide
@@ -56,6 +56,7 @@ API keys are created on the [XRift settings page](https://app.xrift.net/settings
 | `read:instances` | `GET /instances`, `/instances/:id`, `/worlds/:id/instances` |
 | `read:marketplace` | `GET /marketplace/items`, `/marketplace/items/search`, `/marketplace/items/:id` |
 | `read:events` | `GET /events`, `/events/:id` |
+| `read:friends` | `GET /friends/online` |
 | (none) | `GET /stats` — any valid key works |
 
 ## Endpoint Summary
@@ -78,6 +79,7 @@ API keys are created on the [XRift settings page](https://app.xrift.net/settings
 | `GET /marketplace/items/:id` | Item details |
 | `GET /events?from=&to=` | Events in a period (recurring events expanded) |
 | `GET /events/:id` | Event or a single occurrence |
+| `GET /friends/online` | The key owner's friends who are online, and where they are |
 | `GET /stats` | Platform totals |
 
 See [API Reference](references/api-reference.md) for full details.
@@ -103,6 +105,13 @@ See [API Reference](references/api-reference.md) for full details.
 - Recurring events are expanded into occurrences within the period. Each occurrence has `id = "{seriesId}::{original start ISO}"` and a `seriesId` field. One-off events have a plain `id` and no `seriesId`.
 - `GET /events/{occurrenceId}` returns that occurrence (its own time, plus "this occurrence only" edits). `GET /events/{seriesId}` returns the series with the first occurrence's time. Cancelled occurrences and times not in the series return `404`.
 - `status` (`upcoming` / `live` / `ended` / `cancelled`) is computed at request time.
+
+### Friends
+
+- `GET /friends/online` returns the **API key owner's** friends who are online right now. Offline friends, pending requests, and banned users are not included. There is no pagination (`{ "data": [...] }` only).
+- Location (`instanceId`, `instanceName`, `worldId`, `worldName`) is shown only when the friend is in a public instance of a public world. A friend in a private instance or a private world is included only if they opted in to "show me as online in private", and then with the location set to `null`. A friend who is online but not in any instance is also included with `null` location. Always handle `null` location.
+- Friends' whereabouts are shared with the key owner only. Don't post them anywhere public (a public channel, a website) without the friends' consent.
+- To follow friends over time, poll every few minutes at most, not every few seconds — the rate limit is shared with every other request made with the key.
 
 ### Instances
 
