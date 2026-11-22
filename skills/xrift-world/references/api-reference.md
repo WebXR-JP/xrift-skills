@@ -1239,6 +1239,8 @@ import { Video180Sphere } from '@xrift/world-components'
 
 Development environment wrapper. Provides physics, camera, crosshair, first-person navigation, and a single-player seat system (sit on `Seat` targets, drive `Vehicle` from the driver's seat). Not needed in production.
 
+VR (0.67.0+): a "VR に入る" (Enter VR) button enters VR. On `localhost` without a headset, an emulator (Meta Quest 3) is installed when the button is pressed. Controls match production: left stick moves, right stick snap-turns 45°, A jumps / stands up from a seat, trigger (or hand pinch) interacts and sits. Grabbing with the grip is not supported locally yet. For a real headset, run `npm run dev:vr` (HTTPS + `--host`) and open `https://<PC IP>:5173`.
+
 **Props**:
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|

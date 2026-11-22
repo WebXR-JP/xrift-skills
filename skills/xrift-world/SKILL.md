@@ -39,7 +39,7 @@ Visitors join the same instance from PC, mobile (smartphones and tablets), and V
 | Mobile | Required | Touch, virtual joystick |
 | VR | Best effort | Controllers, ray + trigger |
 
-The dev server (`npm run dev`) only exercises PC controls, so these mistakes go unnoticed:
+The dev server (`npm run dev`) defaults to PC controls, so these mistakes go unnoticed. VR can be tested locally too (`@xrift/world-components` 0.67.0+): the "VR に入る" (Enter VR) button at the bottom enters VR, with an emulator on `localhost` when no headset is connected; `npm run dev:vr` serves HTTPS on the LAN for a real headset. Mobile controls cannot be tested locally.
 
 1. **Do not build features on custom keyboard shortcuts** (`window.addEventListener('keydown')`). Mobile and VR have no keyboard, so those features become unusable. Keys such as W/A/S/D, Space, Q/E, G, H, and Esc are also taken by the platform.
    - Buttons and switches: wrap them in `Interactable` (click on PC, touch on mobile, controller in VR)
