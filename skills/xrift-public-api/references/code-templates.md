@@ -185,6 +185,31 @@ const online = instances.data.reduce((sum, i) => sum + i.currentUsers, 0);
 console.log(`${world.data.name}: ${online} online in ${instances.pagination.total} instances`);
 ```
 
+## Online Friends and Where They Are
+
+```typescript
+interface OnlineFriend {
+  user: { id: string; displayName: string; userIconUrl: string | null };
+  instanceId: string | null; // null: location not shown (private) or not in any instance
+  instanceName: string | null;
+  worldId: string | null;
+  worldName: string | null;
+  connectedAt: string | null;
+}
+
+// read:friends. No pagination: every online friend comes back at once
+const { data: friends } = await xriftGet<{ data: OnlineFriend[] }>('/friends/online');
+
+for (const friend of friends) {
+  const where = friend.instanceId
+    ? `${friend.worldName ?? 'a world'} / ${friend.instanceName}`
+    : 'somewhere private';
+  console.log(`${friend.user.displayName}: ${where}`);
+}
+```
+
+To watch friends over time, poll every few minutes at most — each call counts toward the key's rate limit.
+
 ## Error Handling
 
 ```typescript
