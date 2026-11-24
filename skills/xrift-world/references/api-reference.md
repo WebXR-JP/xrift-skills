@@ -1252,6 +1252,7 @@ VR (0.67.0+): a "VR に入る" (Enter VR) button enters VR. On `localhost` witho
 | `respawnThreshold` | `number` | No | Respawn height threshold (default: -10) |
 | `physicsConfig` | `PhysicsConfig` | No | Physics settings |
 | `items` | `Record<string, ComponentType>` | No | Local item components injected into `<Item itemId>` (itemId → component). IDs not in this map load the production bundle via the `xriftDev()` dev-server proxy. Every ID, local or not, must also be declared in `xrift.json` `world.items` |
+| `worldStorageKey` | `string` | No | localStorage key for World Storage (default: `xrift-dev-world-storage`, 0.70.0+). Locally, `useWorldStorage` values persist across reloads with production limits and error codes |
 
 ```typescript
 import { DevEnvironment } from '@xrift/world-components'
